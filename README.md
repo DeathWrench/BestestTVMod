@@ -1,7 +1,7 @@
 # TVLoaderLethalTVManager
-combines these two mods: 
-[TVLoader](https://thunderstore.io/c/lethal-company/p/Rattenbonkers/TVLoader/)
-[LethalTVManager](https://thunderstore.io/c/lethal-company/p/Bushwacc/LethalTVManager/)
+Combines these two mods: 
+- [TVLoader](https://thunderstore.io/c/lethal-company/p/Rattenbonkers/TVLoader/)
+- [LethalTVManager](https://thunderstore.io/c/lethal-company/p/Bushwacc/LethalTVManager/)
 ## Features
 - Videos play sequentially (TVLoader)  
 - Scan volume and skipping videos (LethalTVManager)
