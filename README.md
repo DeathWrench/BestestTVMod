@@ -10,3 +10,5 @@ Combines these two mods:
 - Scan, volume, and skipping videos (LethalTVManager) with ability to hide the prompts
 - Turn off and back on to skip (TVLoader)
 I recommend to use [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/) to be able to adjust these options in game. 
+
+Code is really messy because I just combined the two mods. Lot's of stuff to get rid of and improve about this.
