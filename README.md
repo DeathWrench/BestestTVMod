@@ -3,8 +3,10 @@ Combines these two mods:
 - [TVLoader](https://thunderstore.io/c/lethal-company/p/Rattenbonkers/TVLoader/)
 - [LethalTVManager](https://thunderstore.io/c/lethal-company/p/Bushwacc/LethalTVManager/)
 ## Features Config Options
-- Videos play sequentially (TVLoader)  
-- Scan, volume, and skipping videos (LethalTVManager)
 - Uses Television Videos folder (TVLoader) instead of media (LethalTVManager)
-- Turning TV off and back on again no longer skips the video (LethalTVManager)
-- Config option to toggle TV on all the time.
+- Aspect ratio options
+- TV Always On.
+- Videos play sequentially (TVLoader)
+- Scan, volume, and skipping videos (LethalTVManager) with ability to hide the prompts
+- Turn off and back on to skip (TVLoader)
+I recommend to use [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/) to be able to adjust these options in game. 
