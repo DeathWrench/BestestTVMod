@@ -21,12 +21,13 @@ namespace BestestTVModPlugin
         public static ConfigEntry<bool> mouseWheelVolume { get; set; }
         public static ConfigEntry<bool> hideHoverTip { get; set; }
         public static ConfigEntry<bool> restrictChannels { get; set; }
+        public static ConfigEntry<string> mediaFolder { get; set; }
         public static ConfigEntry<VideoAspectRatio> tvScalingOption { get; set; }
         public static ConfigFile configFile { get; private set; }
         private ConfigManager(ConfigFile cfg)
         {
             configFile = cfg;
-
+            mediaFolder = cfg.Bind("Options", "Media Folder", "Television Videos", "What is the folder called that contains .mp4 files?");
             tvScalingOption = cfg.Bind("Options", "Aspect Ratio", VideoAspectRatio.FitVertically, "Available choices:\nNoScaling\nFitVertically\nFitHorizontally\nFitInside\nFitOutside\nStretch}");
             tvOnAlways = cfg.Bind("Options", "TV Always On", false, "Should the TV stay on after it's been turned on?\n Warning: TV Skips After Off On will skip twice as much with this enabled");
             tvPlaysSequentially = cfg.Bind("Options", "TV Plays Sequentially", true, "Play videos in order or loop?\n");

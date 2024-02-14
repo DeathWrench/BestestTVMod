@@ -14,6 +14,7 @@ namespace BestestTVModPlugin
         // Token: 0x06000002 RID: 2 RVA: 0x0000205C File Offset: 0x0000025C
         private void Awake()
         {
+            ConfigManager.Init(Config);
             BestestTVModPlugin.instance = this;
             this.pluginpath = string.Concat(new string[]
             {
@@ -21,9 +22,9 @@ namespace BestestTVModPlugin
                 Path.DirectorySeparatorChar.ToString(),
                 "DeathWrench-BestestTelevisionMod",
                 Path.DirectorySeparatorChar.ToString(),
-                "Television Videos"
+                ConfigManager.mediaFolder.Value
             });
-            this.pluginpath2 = Paths.PluginPath + Path.DirectorySeparatorChar.ToString() + "Television Videos";
+            this.pluginpath2 = Paths.PluginPath + Path.DirectorySeparatorChar.ToString() + ConfigManager.mediaFolder.Value;
             bool flag = Directory.Exists(this.pluginpath);
             if (flag)
             {
@@ -65,7 +66,6 @@ namespace BestestTVModPlugin
                     num3++;
                 }
             }
-            ConfigManager.Init(Config);
             BestestTVModPlugin.Log = base.Logger;
             BestestTVModPlugin.Harmony.PatchAll();
             VideoManager.Load();
