@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Video;
 using BestestTVModPlugin;
 using static UnityEngine.ParticleSystem.PlaybackState;
+using System.Runtime.CompilerServices;
 
 namespace BestestTVModPlugin
 {
@@ -31,7 +32,7 @@ namespace BestestTVModPlugin
                 TVScriptPatches.renderTexture = TVScriptPatches.currentVideoPlayer.targetTexture;
                 if (VideoManager.Videos.Count > 0)
                 {
-                    TVScriptPatches.PrepareVideo(__instance, 0);
+                   // TVScriptPatches.PrepareVideo(__instance, 0);
                 }
             }
             return false;
@@ -55,6 +56,7 @@ namespace BestestTVModPlugin
                 //        TVScriptPatches.TVIndex = num2;
                 //}
                 __instance.video.aspectRatio = ConfigManager.tvScalingOption.Value;
+                //__instance.video.renderMode = ConfigManager.tvRenderMode.Value;
                 UnityEngine.Object.Destroy(TVScriptPatches.nextVideoPlayer);
                 TVScriptPatches.nextVideoPlayer = __instance.gameObject.AddComponent<VideoPlayer>();
                 TVScriptPatches.nextVideoPlayer.clip = null;
@@ -155,14 +157,19 @@ namespace BestestTVModPlugin
             {
         b
             });
+            if (!ConfigManager.tvLightEnabled.Value)
+            {
+                __instance.tvLight.enabled = false;
+            }
         }
+        
 
         // Token: 0x06000008 RID: 8 RVA: 0x00002308 File Offset: 0x00000508
         [HarmonyPatch(typeof(TVScript), "TVFinishedClip")]
         [HarmonyPrefix]
         public static bool TVFinishedClip(TVScript __instance, VideoPlayer source)
         {
-            if (!__instance.tvOn && !ConfigManager.tvOnAlways.Value || GameNetworkManager.Instance.localPlayerController.isInsideFactory || !ConfigManager.tvPlaysSequentially.Value)//(!__instance.tvOn || GameNetworkManager.Instance.localPlayerController.isInsideFactory)
+            if (!__instance.tvOn || GameNetworkManager.Instance.localPlayerController.isInsideFactory || !ConfigManager.tvPlaysSequentially.Value)//(!__instance.tvOn || GameNetworkManager.Instance.localPlayerController.isInsideFactory)
             {
                 return false;
             }
@@ -239,27 +246,7 @@ namespace BestestTVModPlugin
         }
 
         // Token: 0x0600000A RID: 10 RVA: 0x000024A0 File Offset: 0x000006A0
-        private static void PlayVideo(TVScript __instance)
-        {
-            TVScriptPatches.tvHasPlayedBefore = true;
-            if (VideoManager.Videos.Count == 0)
-            {
-                return;
-            }
-            if (TVScriptPatches.nextVideoPlayer != null)
-            {
-                VideoPlayer componentInChildren = TVScriptPatches.currentVideoPlayer;
-                __instance.video = (TVScriptPatches.currentVideoPlayer = TVScriptPatches.nextVideoPlayer);
-                TVScriptPatches.nextVideoPlayer = null;
-                BestestTVModPlugin.Log.LogInfo(string.Format("Destroy {0}", componentInChildren));
-                UnityEngine.Object.Destroy(componentInChildren);
-                TVScriptPatches.onEnableMethod.Invoke(__instance, new object[0]);
-            }
-            TVScriptPatches.currentTimeProperty.SetValue(__instance, 0f);
-            __instance.video.targetTexture = TVScriptPatches.renderTexture;
-            __instance.video.Play();
-            TVScriptPatches.PrepareVideo(__instance, -1);
-        }
+        
         // LethalTVManager.Patches.LethalTVController
         // Token: 0x0600000A RID: 10 RVA: 0x00002438 File Offset: 0x00000638
         [HarmonyPatch(typeof(PlayerControllerB), "Update")]
@@ -446,12 +433,17 @@ namespace BestestTVModPlugin
 
         private static MethodInfo aspectRatio = typeof(VideoPlayer).GetMethod("VideoAspectRatio", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private static MethodInfo width = typeof(Resolution).GetMethod("m_Height", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private static MethodInfo height = typeof(Resolution).GetMethod("m_Width", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        // Token: 0x170003F4 RID: 1012
+        // (get) Token: 0x06001389 RID: 5001
+        // (set) Token: 0x0600138A RID: 5002
         // Token: 0x0400000D RID: 13
         private static bool tvHasPlayedBefore = false;
 
         public static bool doweneedtodestroy = false;
-
         // Token: 0x0400000E RID: 14
         private static RenderTexture renderTexture;
 
@@ -460,7 +452,9 @@ namespace BestestTVModPlugin
 
         // Token: 0x04000010 RID: 16
         private static VideoPlayer nextVideoPlayer;
-
+        
+        public Light tvLight;
+        
         public static int TVIndex;
     }
 }

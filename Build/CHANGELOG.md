@@ -1,3 +1,6 @@
+## Version 0.0.5
+- Added TV Lights option, whether or not the TV should cast light or not.
+
 ## Version 0.0.4
 - Fixed previous version not working.
 

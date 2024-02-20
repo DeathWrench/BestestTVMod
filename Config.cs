@@ -1,6 +1,7 @@
 using BepInEx.Configuration;
 using System;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 using UnityEngine.Video;
 
 namespace BestestTVModPlugin
@@ -21,14 +22,18 @@ namespace BestestTVModPlugin
         public static ConfigEntry<bool> mouseWheelVolume { get; set; }
         public static ConfigEntry<bool> hideHoverTip { get; set; }
         public static ConfigEntry<bool> restrictChannels { get; set; }
+        public static ConfigEntry<bool> tvLightEnabled { get; set; }
         public static ConfigEntry<string> mediaFolder { get; set; }
         public static ConfigEntry<VideoAspectRatio> tvScalingOption { get; set; }
+        //public static ConfigEntry<VideoRenderMode> tvRenderMode { get; set; }
         public static ConfigFile configFile { get; private set; }
         private ConfigManager(ConfigFile cfg)
         {
             configFile = cfg;
             mediaFolder = cfg.Bind("Options", "Media Folder", "Television Videos", "What is the folder called that contains .mp4 files?");
             tvScalingOption = cfg.Bind("Options", "Aspect Ratio", VideoAspectRatio.FitVertically, "Available choices:\nNoScaling\nFitVertically\nFitHorizontally\nFitInside\nFitOutside\nStretch}");
+            //tvRenderMode = cfg.Bind("Options", "Aspect Ratio", VideoRenderMode.RenderTexture, "Available choices:\nAPIOnly\nCameraFarPlane\nCameraNearPlane\nMaterialOverride\nRenderTexture");
+            tvLightEnabled = cfg.Bind("Options", "Television Lights", true, "Do lights cast from television? If using Scaleable Television set this to false.");
             tvOnAlways = cfg.Bind("Options", "TV Always On", false, "Should the TV stay on after it's been turned on?\n Warning: TV Skips After Off On will skip twice as much with this enabled");
             tvPlaysSequentially = cfg.Bind("Options", "TV Plays Sequentially", true, "Play videos in order or loop?\n");
             tvSkipsAfterOffOn = cfg.Bind("Options", "TV Skips After Off On", false, "Should what is currently playing be skipped after the television is turned off and back on again?\n Warning: Minor UI bug where current channel will be + 1 of what it actually is if Enable Channels is checked");
