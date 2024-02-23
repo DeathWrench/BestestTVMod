@@ -1,6 +1,6 @@
 {
     "name": "BestestTelevisionMod",
-    "version_number": "0.0.5",
+    "version_number": "0.0.7",
     "website_url": "https://github.com/DeathWrench/BestestTVMod",
     "description": "Combines features from LethalTVManager and TVLoader into one mod. All options from both mods toggle-able",
     "dependencies": [
