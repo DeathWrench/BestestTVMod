@@ -13,7 +13,7 @@ namespace BestestTVModPlugin
 		{
 			foreach (string text in Directory.GetDirectories(Paths.PluginPath))
 			{
-				string path = Path.Combine(Paths.PluginPath, text, ConfigManager.mediaFolder.Value);
+				string path = Path.Combine(Paths.PluginPath, text, "Television Videos");
 				if (Directory.Exists(path))
 				{
 					string[] files = Directory.GetFiles(path, "*.mp4");
@@ -21,7 +21,7 @@ namespace BestestTVModPlugin
 					BestestTVModPlugin.Log.LogInfo(string.Format("{0} has {1} videos.", text, files.Length));
 				}
 			}
-			string path2 = Path.Combine(Paths.PluginPath, ConfigManager.mediaFolder.Value);
+			string path2 = Path.Combine(Paths.PluginPath, "Television Videos");
 			if (!Directory.Exists(path2))
 			{
 				Directory.CreateDirectory(path2);

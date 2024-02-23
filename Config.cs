@@ -30,9 +30,9 @@ namespace BestestTVModPlugin
         private ConfigManager(ConfigFile cfg)
         {
             configFile = cfg;
-            mediaFolder = cfg.Bind("Options", "Media Folder", "Television Videos", "What is the folder called that contains .mp4 files?");
+            //mediaFolder = cfg.Bind("Options", "Media Folder", "Television Videos", "What is the folder called that contains .mp4 files?");
             tvScalingOption = cfg.Bind("Options", "Aspect Ratio", VideoAspectRatio.FitVertically, "Available choices:\nNoScaling\nFitVertically\nFitHorizontally\nFitInside\nFitOutside\nStretch}");
-            //tvRenderMode = cfg.Bind("Options", "Aspect Ratio", VideoRenderMode.RenderTexture, "Available choices:\nAPIOnly\nCameraFarPlane\nCameraNearPlane\nMaterialOverride\nRenderTexture");
+            //tvRenderMode = cfg.Bind("Options", "Render Mode", VideoRenderMode.RenderTexture, "Available choices:\nAPIOnly\nCameraFarPlane\nCameraNearPlane\nMaterialOverride\nRenderTexture");
             tvLightEnabled = cfg.Bind("Options", "Television Lights", true, "Do lights cast from television? If using Scaleable Television set this to false.");
             tvOnAlways = cfg.Bind("Options", "TV Always On", false, "Should the TV stay on after it's been turned on?\n Warning: TV Skips After Off On will skip twice as much with this enabled");
             tvPlaysSequentially = cfg.Bind("Options", "TV Plays Sequentially", true, "Play videos in order or loop?\n");

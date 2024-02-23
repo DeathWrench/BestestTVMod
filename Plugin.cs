@@ -16,31 +16,14 @@ namespace BestestTVModPlugin
         {
             ConfigManager.Init(Config);
             BestestTVModPlugin.instance = this;
-            this.pluginpath = string.Concat(new string[]
-            {
-                Paths.PluginPath,
-                Path.DirectorySeparatorChar.ToString(),
-                "DeathWrench-BestestTelevisionMod",
-                Path.DirectorySeparatorChar.ToString(),
-                ConfigManager.mediaFolder.Value
-            });
-            this.pluginpath2 = Paths.PluginPath + Path.DirectorySeparatorChar.ToString() + ConfigManager.mediaFolder.Value;
-            bool flag = Directory.Exists(this.pluginpath);
-            if (flag)
+            this.pluginpath = Paths.PluginPath + Path.DirectorySeparatorChar.ToString() + "Television Videos";
+            if (Directory.Exists(this.pluginpath))
             {
                 this.files = Directory.GetFiles(this.pluginpath);
             }
             else
             {
-                bool flag2 = Directory.Exists(this.pluginpath2);
-                if (flag2)
-                {
-                    this.files = Directory.GetFiles(this.pluginpath2);
-                }
-                else
-                {
-                    this.files = null;
-                }
+                this.files = null;
             }
             Debug.Log(this.files);
             int num = 0;

@@ -351,7 +351,7 @@ namespace BestestTVModPlugin
                         }
                         string Seek = "Seek: [[][]]\n" + (num).ToString("0.###");
                         string Volume = "\nVolume: [-][+]\n" + (num4).ToString("0.##");
-                        string Channels = "\nChannels: [,][.]\n" + (num2).ToString();
+                        string Channels = "\nChannels: [,][.]\n" + (num2 + 1).ToString();
                         if (!ConfigManager.hideHoverTip.Value)
                         {
                             if (ConfigManager.enableSeeking.Value && ConfigManager.enableChannels.Value && ConfigManager.mouseWheelVolume.Value)
