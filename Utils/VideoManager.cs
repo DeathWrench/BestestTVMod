@@ -5,10 +5,8 @@ using BepInEx;
 
 namespace BestestTVModPlugin
 {
-	// Token: 0x02000003 RID: 3
 	internal static class VideoManager
 	{
-		// Token: 0x06000004 RID: 4 RVA: 0x000020D0 File Offset: 0x000002D0
 		public static void Load()
 		{
 			foreach (string text in Directory.GetDirectories(Paths.PluginPath))
@@ -32,7 +30,6 @@ namespace BestestTVModPlugin
 			BestestTVModPlugin.Log.LogInfo(string.Format("Loaded {0} total.", VideoManager.Videos.Count));
 		}
 
-		// Token: 0x04000006 RID: 6
 		public static List<string> Videos = new List<string>();
 	}
 }
