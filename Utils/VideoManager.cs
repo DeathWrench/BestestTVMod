@@ -5,7 +5,7 @@ using BepInEx;
 
 namespace BestestTVModPlugin
 {
-	internal static class VideoManager
+	public static class VideoManager
 	{
 		public static void Load()
 		{

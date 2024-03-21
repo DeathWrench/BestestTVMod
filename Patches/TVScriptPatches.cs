@@ -14,7 +14,6 @@ namespace BestestTVModPlugin
     {
         private static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static bool tvHasPlayedBefore = false;
         private static RenderTexture renderTexture;
         private static VideoPlayer currentVideoPlayer;
         private static VideoPlayer nextVideoPlayer;
@@ -102,7 +101,6 @@ namespace BestestTVModPlugin
                     currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
                     currentClipProperty.SetValue(__instance, currentChannelIndex);
                 }
-                tvHasPlayedBefore = true;
                 __instance.tvSFX.Play();
                 __instance.video.Play();
                 __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
@@ -118,7 +116,6 @@ namespace BestestTVModPlugin
                     __instance.video.Stop();
                     __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
                     WalkieTalkie.TransmitOneShotAudio(__instance.tvSFX, __instance.switchTVOff, 1f);
-                    tvHasPlayedBefore = false;
                 }
                 else
                 {
@@ -139,7 +136,6 @@ namespace BestestTVModPlugin
                         currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
                         currentClipProperty.SetValue(__instance, currentChannelIndex);
                     }
-                    tvHasPlayedBefore = true;
                     __instance.tvSFX.Play();
                     __instance.video.Play();
                     __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
@@ -309,12 +305,6 @@ namespace BestestTVModPlugin
                             currentChannelIndex++;
                     }
 
-                    if (!currentVideoPlayer.isPlaying || !tvHasPlayedBefore) 
-                    {
-                        currentTime = 0.0;
-                        componentInChildren.time = currentTime;
-                    }
-
                     InteractTrigger interactTrigger = parent.GetComponentInChildren<InteractTrigger>();
                     if (interactTrigger == null)
                         BestestTVModPlugin.Log.LogInfo("Television trigger missing!");
@@ -353,7 +343,7 @@ namespace BestestTVModPlugin
                         componentInChildren.url = "file://" + VideoManager.Videos[TVIndex];
                         TVScriptPatches.currentClipProperty.SetValue(__instance, currentChannelIndex);
                         BestestTVModPlugin.Log.LogInfo("AdjustMediaFile: " + VideoManager.Videos[TVIndex]);
-                        if (!currentVideoPlayer.isPlaying || !tvHasPlayedBefore)
+                        if (!currentVideoPlayer.isPlaying)
                         {
                             currentTime = 0.0;
                             componentInChildren.time = currentTime;
