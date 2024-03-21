@@ -203,7 +203,6 @@ namespace BestestTVModPlugin
                 TVIndex = currentChannelIndex;
                 currentVideoPlayer.time = 0.0;
                 currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
-                currentClipProperty.SetValue(__instance, currentChannelIndex);
             }
             currentTimeProperty.SetValue(__instance, 0f);
             currentClipProperty.SetValue(__instance, currentChannelIndex);
@@ -213,18 +212,31 @@ namespace BestestTVModPlugin
 
         private static void WhatItDo(TVScript __instance, int currentChannelIndex = -1)
         {
-            __instance.video.aspectRatio = ConfigManager.tvScalingOption.Value;
-            __instance.video.clip = null;
-            __instance.tvSFX.clip = null;
-            BestestTVModPlugin.Log.LogInfo("file://" + VideoManager.Videos[TVIndex]);
-            __instance.video.url = "file://" + VideoManager.Videos[TVIndex];
-            __instance.video.source = VideoSource.Url;
-            __instance.video.controlledAudioTrackCount = 1;
-            __instance.video.audioOutputMode = VideoAudioOutputMode.AudioSource;
-            __instance.video.SetTargetAudioSource(0, __instance.tvSFX);
-            __instance.video.Prepare();
-            __instance.video.Stop();
-            __instance.tvSFX.Stop();
+            if (VideoManager.Videos.Count > 0)
+            {
+                __instance.video.aspectRatio = ConfigManager.tvScalingOption.Value;
+                __instance.video.clip = null;
+                __instance.tvSFX.clip = null;
+
+                // Build the video URL
+                string videoUrl = "file://" + VideoManager.Videos[currentChannelIndex];
+
+                BestestTVModPlugin.Log.LogInfo(videoUrl);
+
+                __instance.video.url = videoUrl;
+                __instance.video.source = VideoSource.Url;
+                __instance.video.controlledAudioTrackCount = 1;
+                __instance.video.audioOutputMode = VideoAudioOutputMode.AudioSource;
+                __instance.video.SetTargetAudioSource(0, __instance.tvSFX);
+                __instance.video.Prepare();
+                __instance.video.Stop();
+                __instance.tvSFX.Stop();
+            }
+            else
+            {
+                // Handle the case where VideoManager.Videos is empty
+                BestestTVModPlugin.Log.LogError("VideoManager.Videos list is empty. Put some videos in Television Videos folder.");
+            }
         }
 
         [HarmonyPatch(typeof(TVScript), "__initializeVariables")]
