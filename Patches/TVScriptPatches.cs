@@ -14,6 +14,7 @@ namespace BestestTVModPlugin
     {
         private static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static bool tvHasPlayedBefore = false;
         private static RenderTexture renderTexture;
         private static VideoPlayer currentVideoPlayer;
         private static VideoPlayer nextVideoPlayer;
@@ -101,6 +102,7 @@ namespace BestestTVModPlugin
                     currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
                     currentClipProperty.SetValue(__instance, currentChannelIndex);
                 }
+                tvHasPlayedBefore = true;
                 __instance.tvSFX.Play();
                 __instance.video.Play();
                 __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
@@ -116,6 +118,7 @@ namespace BestestTVModPlugin
                     __instance.video.Stop();
                     __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
                     WalkieTalkie.TransmitOneShotAudio(__instance.tvSFX, __instance.switchTVOff, 1f);
+                    tvHasPlayedBefore = false;
                 }
                 else
                 {
@@ -136,6 +139,7 @@ namespace BestestTVModPlugin
                         currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
                         currentClipProperty.SetValue(__instance, currentChannelIndex);
                     }
+                    tvHasPlayedBefore = true;
                     __instance.tvSFX.Play();
                     __instance.video.Play();
                     __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
@@ -203,6 +207,7 @@ namespace BestestTVModPlugin
                 TVIndex = currentChannelIndex;
                 currentVideoPlayer.time = 0.0;
                 currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
+                currentClipProperty.SetValue(__instance, currentChannelIndex);
             }
             currentTimeProperty.SetValue(__instance, 0f);
             currentClipProperty.SetValue(__instance, currentChannelIndex);
@@ -212,31 +217,18 @@ namespace BestestTVModPlugin
 
         private static void WhatItDo(TVScript __instance, int currentChannelIndex = -1)
         {
-            if (VideoManager.Videos.Count > 0)
-            {
-                __instance.video.aspectRatio = ConfigManager.tvScalingOption.Value;
-                __instance.video.clip = null;
-                __instance.tvSFX.clip = null;
-
-                // Build the video URL
-                string videoUrl = "file://" + VideoManager.Videos[currentChannelIndex];
-
-                BestestTVModPlugin.Log.LogInfo(videoUrl);
-
-                __instance.video.url = videoUrl;
-                __instance.video.source = VideoSource.Url;
-                __instance.video.controlledAudioTrackCount = 1;
-                __instance.video.audioOutputMode = VideoAudioOutputMode.AudioSource;
-                __instance.video.SetTargetAudioSource(0, __instance.tvSFX);
-                __instance.video.Prepare();
-                __instance.video.Stop();
-                __instance.tvSFX.Stop();
-            }
-            else
-            {
-                // Handle the case where VideoManager.Videos is empty
-                BestestTVModPlugin.Log.LogError("VideoManager.Videos list is empty. Put some videos in Television Videos folder.");
-            }
+            __instance.video.aspectRatio = ConfigManager.tvScalingOption.Value;
+            __instance.video.clip = null;
+            __instance.tvSFX.clip = null;
+            BestestTVModPlugin.Log.LogInfo("file://" + VideoManager.Videos[TVIndex]);
+            __instance.video.url = "file://" + VideoManager.Videos[TVIndex];
+            __instance.video.source = VideoSource.Url;
+            __instance.video.controlledAudioTrackCount = 1;
+            __instance.video.audioOutputMode = VideoAudioOutputMode.AudioSource;
+            __instance.video.SetTargetAudioSource(0, __instance.tvSFX);
+            __instance.video.Prepare();
+            __instance.video.Stop();
+            __instance.tvSFX.Stop();
         }
 
         [HarmonyPatch(typeof(TVScript), "__initializeVariables")]
@@ -317,6 +309,12 @@ namespace BestestTVModPlugin
                             currentChannelIndex++;
                     }
 
+                    if (!currentVideoPlayer.isPlaying || !tvHasPlayedBefore) 
+                    {
+                        currentTime = 0.0;
+                        componentInChildren.time = currentTime;
+                    }
+
                     InteractTrigger interactTrigger = parent.GetComponentInChildren<InteractTrigger>();
                     if (interactTrigger == null)
                         BestestTVModPlugin.Log.LogInfo("Television trigger missing!");
@@ -355,7 +353,7 @@ namespace BestestTVModPlugin
                         componentInChildren.url = "file://" + VideoManager.Videos[TVIndex];
                         TVScriptPatches.currentClipProperty.SetValue(__instance, currentChannelIndex);
                         BestestTVModPlugin.Log.LogInfo("AdjustMediaFile: " + VideoManager.Videos[TVIndex]);
-                        if (!currentVideoPlayer.isPlaying)
+                        if (!currentVideoPlayer.isPlaying || !tvHasPlayedBefore)
                         {
                             currentTime = 0.0;
                             componentInChildren.time = currentTime;
