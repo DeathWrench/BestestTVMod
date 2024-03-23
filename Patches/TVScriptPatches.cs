@@ -14,8 +14,10 @@ namespace BestestTVModPlugin
     {
         private static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static bool tvHasPlayedBefore = false;
         private static RenderTexture renderTexture;
-        private static VideoPlayer currentVideoPlayer;
+        private static AudioSource audioSource;// = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static VideoPlayer videoSource;
         public Light tvLight;
         public static int TVIndex;
 
@@ -25,17 +27,18 @@ namespace BestestTVModPlugin
         {
             TVIndex = 0;
         }
+
         [HarmonyPatch(typeof(TVScript), "Update")]
         [HarmonyPrefix]
         public static bool Update(TVScript __instance)
         {
-            if (currentVideoPlayer == null)
+            if (videoSource == null)
             {
-                currentVideoPlayer = __instance.GetComponent<VideoPlayer>();
-                renderTexture = currentVideoPlayer.targetTexture;
+                videoSource = __instance.GetComponent<VideoPlayer>();
+                renderTexture = videoSource.targetTexture;
                 if (VideoManager.Videos.Count > 0)
                 {
-                    WhatItDo(__instance, 0);
+                    WhatItDo(__instance, TVIndex);
                 }
             }
             return false;
@@ -47,8 +50,9 @@ namespace BestestTVModPlugin
         {
             int currentChannelIndex = TVIndex;
             __instance.tvOn = on;
+            audioSource = __instance.tvSFX;
 
-            if (__instance.video.source != VideoSource.Url || __instance.video.url == "")
+            if (videoSource.source != VideoSource.Url || videoSource.url == "")
             {
                 WhatItDo(__instance);
             }
@@ -66,14 +70,16 @@ namespace BestestTVModPlugin
                     TVIndex = currentChannelIndex;
 
                     // Set the currentClip property to reflect the new index
-                    currentVideoPlayer.Stop();
+                    videoSource.Stop();
                     TVIndex = currentChannelIndex;
-                    currentVideoPlayer.time = 0.0;
-                    currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
-                    currentClipProperty.SetValue(__instance, currentChannelIndex);
+                    videoSource.time = 0.0;
+                    videoSource.url = "file://" + VideoManager.Videos[TVIndex];
+                    currentClipProperty.SetValue(videoSource, currentChannelIndex);
                 }
-                __instance.tvSFX.Play();
-                __instance.video.Play();
+                tvHasPlayedBefore = true;
+                audioSource.Play();
+                videoSource.Play();
+                videoSource.time = audioSource.time;
                 __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
                 WalkieTalkie.TransmitOneShotAudio(__instance.tvSFX, __instance.switchTVOn, 1f);
             }
@@ -83,10 +89,11 @@ namespace BestestTVModPlugin
                 {
                     BestestTVModPlugin.Log.LogInfo("Turning off TV");
                     SetTVScreenMaterial(__instance, false);
-                    __instance.tvSFX.Stop();
-                    __instance.video.Stop();
+                    audioSource.Stop();
+                    videoSource.Stop();
                     __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
                     WalkieTalkie.TransmitOneShotAudio(__instance.tvSFX, __instance.switchTVOff, 1f);
+                    tvHasPlayedBefore = false;
                 }
                 else
                 {
@@ -101,14 +108,16 @@ namespace BestestTVModPlugin
                         TVIndex = currentChannelIndex;
 
                         // Set the currentClip property to reflect the new index
-                        currentVideoPlayer.Stop();
+                        videoSource.Stop();
                         TVIndex = currentChannelIndex;
-                        currentVideoPlayer.time = 0.0;
-                        currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
-                        currentClipProperty.SetValue(__instance, currentChannelIndex);
+                        videoSource.time = 0.0;
+                        videoSource.url = "file://" + VideoManager.Videos[TVIndex];
+                        currentClipProperty.SetValue(videoSource, currentChannelIndex);
                     }
-                    __instance.tvSFX.Play();
-                    __instance.video.Play();
+                    tvHasPlayedBefore = true;
+                    audioSource.Play();
+                    videoSource.Play();
+                    videoSource.time = audioSource.time;
                     __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
                     WalkieTalkie.TransmitOneShotAudio(__instance.tvSFX, __instance.switchTVOn, 1f);
                 }
@@ -145,39 +154,39 @@ namespace BestestTVModPlugin
                 TVIndex = currentChannelIndex;
 
                 // Set the currentClip property to reflect the new index
-                currentVideoPlayer.Stop();
+                videoSource.Stop();
                 TVIndex = currentChannelIndex;
-                currentVideoPlayer.time = 0.0;
-                currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
-                currentClipProperty.SetValue(__instance, currentChannelIndex);
+                videoSource.time = 0.0;
+                videoSource.url = "file://" + VideoManager.Videos[TVIndex];
             }
-            currentTimeProperty.SetValue(__instance, 0f);
-            currentClipProperty.SetValue(__instance, currentChannelIndex);
+            currentTimeProperty.SetValue(videoSource, 0f);
+            currentClipProperty.SetValue(videoSource, currentChannelIndex);
             WhatItDo(__instance);
             return false;
         }
 
         private static void WhatItDo(TVScript __instance, int currentChannelIndex = -1)
         {
+            audioSource = __instance.tvSFX;
             if (VideoManager.Videos.Count > 0)
             {
-                __instance.video.aspectRatio = ConfigManager.tvScalingOption.Value;
-                __instance.video.clip = null;
-                __instance.tvSFX.clip = null;
+                videoSource.aspectRatio = ConfigManager.tvScalingOption.Value;
+                videoSource.clip = null;
+                audioSource.clip = null;
 
                 // Build the video URL
                 string videoUrl = "file://" + VideoManager.Videos[currentChannelIndex];
 
                 BestestTVModPlugin.Log.LogInfo(videoUrl);
 
-                __instance.video.url = videoUrl;
-                __instance.video.source = VideoSource.Url;
-                __instance.video.controlledAudioTrackCount = 1;
-                __instance.video.audioOutputMode = VideoAudioOutputMode.AudioSource;
-                __instance.video.SetTargetAudioSource(0, __instance.tvSFX);
-                __instance.video.Prepare();
-                __instance.video.Stop();
-                __instance.tvSFX.Stop();
+                videoSource.url = videoUrl;
+                videoSource.source = VideoSource.Url;
+                videoSource.controlledAudioTrackCount = 1;
+                videoSource.audioOutputMode = VideoAudioOutputMode.AudioSource;
+                videoSource.SetTargetAudioSource(0, audioSource);
+                videoSource.Stop();
+                //audioSource.Stop();
+                videoSource.Prepare();
             }
             else
             {
@@ -212,10 +221,10 @@ namespace BestestTVModPlugin
 
             if (gameObject != null && gameObject.name.Contains("Television"))
             {
-                VideoPlayer componentInChildren = gameObject.GetComponentInChildren<VideoPlayer>();
-                AudioSource audioSource = gameObject.transform.Find("TVAudio").GetComponent<AudioSource>();
+                videoSource = gameObject.GetComponentInChildren<VideoPlayer>();
+                audioSource = gameObject.transform.Find("TVAudio").GetComponent<AudioSource>();
 
-                double currentTime = componentInChildren.time;
+                double currentTime = videoSource.time;
                 int currentChannelIndex = TVScriptPatches.TVIndex;
                 float scrollDelta = Mouse.current.scroll.ReadValue().y;
                 float volume = audioSource.volume;
@@ -224,9 +233,9 @@ namespace BestestTVModPlugin
                 var skipReverseKey = ConfigManager.skipReverseKeyBind.Value;
                 var skipForwardKey = ConfigManager.skipForwardKeyBind.Value;
 
-                if (componentInChildren != null)
+                if (videoSource != null)
                 {
-                    if (Keyboard.current[seekReverseKey].wasPressedThisFrame && ConfigManager.enableSeeking.Value && currentVideoPlayer.isPlaying)
+                    if (Keyboard.current[seekReverseKey].wasPressedThisFrame && ConfigManager.enableSeeking.Value)
                     {
                         currentTime -= 15.0;
                         if (currentTime < 0.0)
@@ -236,15 +245,17 @@ namespace BestestTVModPlugin
                         }
                         else
                         {
-                            componentInChildren.time = currentTime;
+                            videoSource.time = currentTime;
+                            videoSource.time = audioSource.time;
                             BestestTVModPlugin.Log.LogInfo("AdjustTime: " + currentTime.ToString());
                         }
                     }
 
-                    if (Keyboard.current[seekForwardKey].wasPressedThisFrame && ConfigManager.enableSeeking.Value && currentVideoPlayer.isPlaying)
+                    if (Keyboard.current[seekForwardKey].wasPressedThisFrame && ConfigManager.enableSeeking.Value)
                     {
                         currentTime += 15.0;
-                        componentInChildren.time = currentTime;
+                        videoSource.time = currentTime;
+                        videoSource.time = audioSource.time;
                         BestestTVModPlugin.Log.LogInfo("AdjustTime: " + currentTime.ToString());
                     }
 
@@ -264,10 +275,11 @@ namespace BestestTVModPlugin
                             currentChannelIndex++;
                     }
 
-                    if (!currentVideoPlayer.isPlaying) 
+                    if (!videoSource.isPlaying || !tvHasPlayedBefore) 
                     {
                         currentTime = 0.0;
-                        componentInChildren.time = currentTime;
+                        videoSource.time = currentTime;
+                        videoSource.time = audioSource.time;
                     }
 
                     InteractTrigger interactTrigger = parent.GetComponentInChildren<InteractTrigger>();
@@ -300,18 +312,19 @@ namespace BestestTVModPlugin
                         interactTrigger.hoverTip = hoverTip;
                     }
 
-                    if (currentChannelIndex != TVScriptPatches.TVIndex && ConfigManager.enableChannels.Value)
+                    if (currentChannelIndex != TVIndex && ConfigManager.enableChannels.Value)
                     {
-                        TVScriptPatches.currentVideoPlayer.Stop();
-                        TVScriptPatches.TVIndex = currentChannelIndex;
-                        componentInChildren.time = 0.0;
-                        componentInChildren.url = "file://" + VideoManager.Videos[TVIndex];
-                        TVScriptPatches.currentClipProperty.SetValue(__instance, currentChannelIndex);
+                        videoSource.Stop();
+                        TVIndex = currentChannelIndex;
+                        videoSource.time = 0.0;
+                        videoSource.url = "file://" + VideoManager.Videos[TVIndex];
+                        currentClipProperty.SetValue(__instance, currentChannelIndex);
                         BestestTVModPlugin.Log.LogInfo("AdjustMediaFile: " + VideoManager.Videos[TVIndex]);
-                        if (!currentVideoPlayer.isPlaying)
+                        if (!videoSource.isPlaying || !tvHasPlayedBefore)
                         {
                             currentTime = 0.0;
-                            componentInChildren.time = currentTime;
+                            videoSource.time = currentTime;
+                            videoSource.time = audioSource.time;
                         }
                     }
 

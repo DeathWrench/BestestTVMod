@@ -196,22 +196,15 @@ namespace BestestTVModPlugin
         public static ConfigEntry<bool> hideHoverTip { get; set; }
         public static ConfigEntry<bool> restrictChannels { get; set; }
         public static ConfigEntry<bool> tvLightEnabled { get; set; }
-        //public static ConfigEntry<bool> customResolutionEnabled { get; set; }
-        //public static ConfigEntry<int> customResolutionX { get; set; }
-        //public static ConfigEntry<int> customResolutionY { get; set; }
         public static ConfigEntry<VideoAspectRatio> tvScalingOption { get; set; }
         public static ConfigEntry<Key> seekReverseKeyBind { get; set; }
         public static ConfigEntry<Key> seekForwardKeyBind { get; set; }
         public static ConfigEntry<Key> skipReverseKeyBind { get; set; }
         public static ConfigEntry<Key> skipForwardKeyBind { get; set; }
-        //public static ConfigEntry<VideoRenderMode> tvRenderMode { get; set; }
         public static ConfigFile configFile { get; private set; }
         private ConfigManager(ConfigFile cfg)
         {
             configFile = cfg;
-            //customResolutionEnabled = cfg.Bind("Options", "Custom Resolution Width", false, "If false ignores height and width setting");
-            //customResolutionX = cfg.Bind("Options", "Custom Resolution Width", 1920, "Spoof texture being rendered to a higher resolution");
-            //customResolutionY = cfg.Bind("Options", "Custom Resolution Height", 1080, "Spoof texture being rendered to a higher resolution");
             tvScalingOption = cfg.Bind("Options", "Aspect Ratio", VideoAspectRatio.FitVertically, "Available choices:\nNoScaling\nFitVertically\nFitHorizontally\nFitInside\nFitOutside\nStretch}");
             tvLightEnabled = cfg.Bind("Options", "Television Lights", true, "Do lights cast from television? If using Scaleable Television set this to false.");
             tvOnAlways = cfg.Bind("Options", "TV Always On", false, "Should the TV stay on after it's been turned on?\n Warning: TV Skips After Off On will skip twice as much with this enabled");

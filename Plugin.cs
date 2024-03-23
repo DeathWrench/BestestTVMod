@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BestestTVModPlugin
 {
-    [BepInPlugin("DeathWrench.BestestTelevisionMod", "​BestestTelevisionMod", "1.1.0")]
+    [BepInPlugin("DeathWrench.BestestTelevisionMod", "​BestestTelevisionMod", "1.1.1")]
     public class BestestTVModPlugin : BaseUnityPlugin
     {
         private static readonly Harmony Harmony = new Harmony("DeathWrench.BestestTelevisionMod");
@@ -22,7 +22,7 @@ namespace BestestTVModPlugin
 
             // Load videos and log the count
             VideoManager.Load();
-            base.Logger.LogInfo($"PluginName: BestestTelevisionMod, VersionString: 1.1.0 is loaded.");
+            base.Logger.LogInfo($"PluginName: BestestTelevisionMod, VersionString: 1.1.1 is loaded.");
         }
 
         public static BestestTVModPlugin instance;
