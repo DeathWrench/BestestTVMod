@@ -14,10 +14,8 @@ namespace BestestTVModPlugin
     {
         private static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static bool tvHasPlayedBefore = false;
         private static RenderTexture renderTexture;
         private static VideoPlayer currentVideoPlayer;
-        private static VideoPlayer nextVideoPlayer;
         public Light tvLight;
         public static int TVIndex;
 
@@ -37,39 +35,11 @@ namespace BestestTVModPlugin
                 renderTexture = currentVideoPlayer.targetTexture;
                 if (VideoManager.Videos.Count > 0)
                 {
-                    PrepareVideo(__instance, 0);
+                    WhatItDo(__instance, 0);
                 }
-                // Check if resizing is enabled
-                /*if (ConfigManager.customResolutionEnabled.Value)
-                {
-                    // Resize the RenderTexture
-                    ResizeRenderTexture(currentVideoPlayer.targetTexture, ConfigManager.customResolutionX.Value, ConfigManager.customResolutionY.Value);
-                }*/
             }
             return false;
         }
-
-        // Method to resize RenderTexture
-        /*private static void ResizeRenderTexture(RenderTexture originalRenderTexture, int newWidth, int newHeight)
-        {
-            // Create a new RenderTexture with the new dimensions
-            RenderTexture resizedRenderTexture = new RenderTexture(newWidth, newHeight, 0);
-
-            // Set the active RenderTexture to the new one
-            RenderTexture.active = resizedRenderTexture;
-
-            // Draw the contents of the original RenderTexture to the new one, resizing it in the process
-            Graphics.Blit(originalRenderTexture, resizedRenderTexture);
-
-            // Reset the active RenderTexture
-            RenderTexture.active = null;
-
-            // Use the resized RenderTexture
-            currentVideoPlayer.targetTexture = resizedRenderTexture;
-
-            // Release resources of the original RenderTexture
-            originalRenderTexture.Release();
-        }*/
 
         [HarmonyPatch(typeof(TVScript), "TurnTVOnOff")]
         [HarmonyPrefix]
@@ -102,7 +72,6 @@ namespace BestestTVModPlugin
                     currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
                     currentClipProperty.SetValue(__instance, currentChannelIndex);
                 }
-                tvHasPlayedBefore = true;
                 __instance.tvSFX.Play();
                 __instance.video.Play();
                 __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
@@ -118,7 +87,6 @@ namespace BestestTVModPlugin
                     __instance.video.Stop();
                     __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
                     WalkieTalkie.TransmitOneShotAudio(__instance.tvSFX, __instance.switchTVOff, 1f);
-                    tvHasPlayedBefore = false;
                 }
                 else
                 {
@@ -139,7 +107,6 @@ namespace BestestTVModPlugin
                         currentVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
                         currentClipProperty.SetValue(__instance, currentChannelIndex);
                     }
-                    tvHasPlayedBefore = true;
                     __instance.tvSFX.Play();
                     __instance.video.Play();
                     __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
@@ -157,31 +124,6 @@ namespace BestestTVModPlugin
             {
                 __instance.tvLight.enabled = false;
             }
-        }
-
-        private static void PrepareVideo(TVScript __instance, int currentChannelIndex = -1)
-        {
-            if (currentChannelIndex == -1)
-            {
-                currentChannelIndex = (int)TVScriptPatches.currentClipProperty.GetValue(__instance) + 1;
-            }
-            if (TVScriptPatches.nextVideoPlayer != null && TVScriptPatches.nextVideoPlayer.gameObject.activeInHierarchy)
-            {
-                UnityEngine.Object.Destroy(TVScriptPatches.nextVideoPlayer);
-            }
-            TVScriptPatches.nextVideoPlayer = __instance.gameObject.AddComponent<VideoPlayer>();
-            TVScriptPatches.nextVideoPlayer.playOnAwake = false;
-            TVScriptPatches.nextVideoPlayer.isLooping = false;
-            TVScriptPatches.nextVideoPlayer.source = VideoSource.Url;
-            TVScriptPatches.nextVideoPlayer.controlledAudioTrackCount = 1;
-            TVScriptPatches.nextVideoPlayer.audioOutputMode = VideoAudioOutputMode.AudioSource;
-            TVScriptPatches.nextVideoPlayer.SetTargetAudioSource(0, __instance.tvSFX);
-            TVScriptPatches.nextVideoPlayer.url = "file://" + VideoManager.Videos[TVIndex];
-            TVScriptPatches.nextVideoPlayer.Prepare();
-            TVScriptPatches.nextVideoPlayer.prepareCompleted += delegate (VideoPlayer source)
-            {
-                BestestTVModPlugin.Log.LogInfo("Prepared next video!");
-            };
         }
 
         [HarmonyPatch(typeof(TVScript), "TVFinishedClip")]
@@ -211,24 +153,37 @@ namespace BestestTVModPlugin
             }
             currentTimeProperty.SetValue(__instance, 0f);
             currentClipProperty.SetValue(__instance, currentChannelIndex);
-            PrepareVideo(__instance);
+            WhatItDo(__instance);
             return false;
         }
 
         private static void WhatItDo(TVScript __instance, int currentChannelIndex = -1)
         {
-            __instance.video.aspectRatio = ConfigManager.tvScalingOption.Value;
-            __instance.video.clip = null;
-            __instance.tvSFX.clip = null;
-            BestestTVModPlugin.Log.LogInfo("file://" + VideoManager.Videos[TVIndex]);
-            __instance.video.url = "file://" + VideoManager.Videos[TVIndex];
-            __instance.video.source = VideoSource.Url;
-            __instance.video.controlledAudioTrackCount = 1;
-            __instance.video.audioOutputMode = VideoAudioOutputMode.AudioSource;
-            __instance.video.SetTargetAudioSource(0, __instance.tvSFX);
-            __instance.video.Prepare();
-            __instance.video.Stop();
-            __instance.tvSFX.Stop();
+            if (VideoManager.Videos.Count > 0)
+            {
+                __instance.video.aspectRatio = ConfigManager.tvScalingOption.Value;
+                __instance.video.clip = null;
+                __instance.tvSFX.clip = null;
+
+                // Build the video URL
+                string videoUrl = "file://" + VideoManager.Videos[currentChannelIndex];
+
+                BestestTVModPlugin.Log.LogInfo(videoUrl);
+
+                __instance.video.url = videoUrl;
+                __instance.video.source = VideoSource.Url;
+                __instance.video.controlledAudioTrackCount = 1;
+                __instance.video.audioOutputMode = VideoAudioOutputMode.AudioSource;
+                __instance.video.SetTargetAudioSource(0, __instance.tvSFX);
+                __instance.video.Prepare();
+                __instance.video.Stop();
+                __instance.tvSFX.Stop();
+            }
+            else
+            {
+                // Handle the case where VideoManager.Videos is empty
+                BestestTVModPlugin.Log.LogError("VideoManager.Videos list is empty. Put some videos in Television Videos folder.");
+            }
         }
 
         [HarmonyPatch(typeof(TVScript), "__initializeVariables")]
@@ -309,7 +264,7 @@ namespace BestestTVModPlugin
                             currentChannelIndex++;
                     }
 
-                    if (!currentVideoPlayer.isPlaying || !tvHasPlayedBefore) 
+                    if (!currentVideoPlayer.isPlaying) 
                     {
                         currentTime = 0.0;
                         componentInChildren.time = currentTime;
@@ -353,7 +308,7 @@ namespace BestestTVModPlugin
                         componentInChildren.url = "file://" + VideoManager.Videos[TVIndex];
                         TVScriptPatches.currentClipProperty.SetValue(__instance, currentChannelIndex);
                         BestestTVModPlugin.Log.LogInfo("AdjustMediaFile: " + VideoManager.Videos[TVIndex]);
-                        if (!currentVideoPlayer.isPlaying || !tvHasPlayedBefore)
+                        if (!currentVideoPlayer.isPlaying)
                         {
                             currentTime = 0.0;
                             componentInChildren.time = currentTime;
