@@ -62,18 +62,7 @@ namespace BestestTVModPlugin
                 SetTVScreenMaterial(__instance, true);
                 if (on && ConfigManager.tvSkipsAfterOffOn.Value)
                 {
-                    if (TVIndex >= VideoManager.Videos.Count - 1)
-                        TVIndex = 0;
-                    else
-                        TVIndex++;
-                    TVIndex = TVIndex;
-
-                    // Set the currentClip property to reflect the new index
-                    videoSource.Stop();
-                    TVIndex = TVIndex;
-                    videoSource.time = 0.0;
-                    videoSource.url = "file://" + VideoManager.Videos[TVIndex];
-                    currentClipProperty.SetValue(videoSource, TVIndex);
+                    TVIndexUp();
                 }
                 tvHasPlayedBefore = true;
                 audioSource.Play();
@@ -100,18 +89,7 @@ namespace BestestTVModPlugin
                     SetTVScreenMaterial(__instance, true);
                     if (!on && ConfigManager.tvSkipsAfterOffOn.Value)
                     {
-                        if (TVIndex >= VideoManager.Videos.Count - 1)
-                            TVIndex = 0;
-                        else
-                            TVIndex++;
-                        TVIndex = TVIndex;
-
-                        // Set the currentClip property to reflect the new index
-                        videoSource.Stop();
-                        TVIndex = TVIndex;
-                        videoSource.time = 0.0;
-                        videoSource.url = "file://" + VideoManager.Videos[TVIndex];
-                        currentClipProperty.SetValue(videoSource, TVIndex);
+                        TVIndexUp();
                     }
                     tvHasPlayedBefore = true;
                     audioSource.Play();
@@ -122,6 +100,31 @@ namespace BestestTVModPlugin
                 }
             }
             return false;
+        }
+
+        public static void TVIndexUp()
+        {
+            if (TVIndex >= VideoManager.Videos.Count - 1)
+                TVIndex = 0;
+            else
+            TVIndex++;
+            videoSource.Stop();
+            videoSource.time = 0.0;
+            videoSource.url = "file://" + VideoManager.Videos[TVIndex];
+            currentClipProperty.SetValue(videoSource, TVIndex);
+        }
+        public static void TVIndexDown()
+        {
+            if (TVIndex > 0)
+            {
+                TVIndex--;
+                videoSource.Stop();
+                videoSource.time = 0.0;
+                videoSource.url = "file://" + VideoManager.Videos[TVIndex];
+                currentClipProperty.SetValue(videoSource, TVIndex);
+            }
+            else
+            TVIndex = VideoManager.Videos.Count - 1;
         }
 
         public static void SetTVScreenMaterial(TVScript __instance, bool b)
@@ -145,17 +148,7 @@ namespace BestestTVModPlugin
             BestestTVModPlugin.Log.LogInfo("TVFinishedClip");
             if (VideoManager.Videos.Count > 0 && ConfigManager.tvPlaysSequentially.Value)
             {
-                if (TVIndex >= VideoManager.Videos.Count - 1)
-                    TVIndex = 0;
-                else
-                    TVIndex++;
-                TVIndex = TVIndex;
-
-                // Set the currentClip property to reflect the new index
-                videoSource.Stop();
-                TVIndex = TVIndex;
-                videoSource.time = 0.0;
-                videoSource.url = "file://" + VideoManager.Videos[TVIndex];
+                TVIndexUp();
             }
             currentTimeProperty.SetValue(videoSource, 0f);
             currentClipProperty.SetValue(videoSource, TVIndex);
@@ -172,7 +165,7 @@ namespace BestestTVModPlugin
                 videoSource.clip = null;
                 audioSource.clip = null;
 
-                TVIndex = TVIndex;
+                
                 // Build the video URL
                 string videoUrl = "file://" + VideoManager.Videos[TVIndex];
 
@@ -259,18 +252,12 @@ namespace BestestTVModPlugin
 
                     if (Keyboard.current[skipReverseKey].wasPressedThisFrame && ConfigManager.enableChannels.Value && !ConfigManager.restrictChannels.Value)
                     {
-                        if (TVIndex > 0)
-                            TVIndex--;
-                        else
-                            TVIndex = VideoManager.Videos.Count - 1;
+                        TVIndexDown();
                     }
 
                     if (Keyboard.current[skipForwardKey].wasPressedThisFrame && ConfigManager.enableChannels.Value && !ConfigManager.restrictChannels.Value)
                     {
-                        if (TVIndex >= VideoManager.Videos.Count - 1)
-                            TVIndex = 0;
-                        else
-                            TVIndex++;
+                        TVIndexUp();
                     }
 
                     if (!videoSource.isPlaying || !tvHasPlayedBefore) 
@@ -312,10 +299,11 @@ namespace BestestTVModPlugin
 
                     if (TVIndex != TVIndex && ConfigManager.enableChannels.Value)
                     {
-                        videoSource.Stop();
-                        videoSource.time = 0.0;
-                        videoSource.url = "file://" + VideoManager.Videos[TVIndex];
-                        currentClipProperty.SetValue(videoSource, TVIndex);
+                        //
+                        //videoSource.Stop();
+                        //videoSource.time = 0.0;
+                        //videoSource.url = "file://" + VideoManager.Videos[TVIndex];
+                        //currentClipProperty.SetValue(videoSource, TVIndex);
                         BestestTVModPlugin.Log.LogInfo("AdjustMediaFile: " + VideoManager.Videos[TVIndex]);
                         if (!videoSource.isPlaying || !tvHasPlayedBefore)
                         {
