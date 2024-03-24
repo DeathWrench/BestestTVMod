@@ -190,6 +190,7 @@ namespace BestestTVModPlugin
     public static ConfigEntry<bool> tvOnAlways { get; set; }
         public static ConfigEntry<bool> tvPlaysSequentially { get; set; }
         public static ConfigEntry<bool> tvSkipsAfterOffOn { get; set; }
+        public static ConfigEntry<bool> shuffleVideos { get; set; }
         public static ConfigEntry<bool> enableSeeking { get; set; }
         public static ConfigEntry<bool> enableChannels { get; set; }
         public static ConfigEntry<bool> mouseWheelVolume { get; set; }
@@ -197,6 +198,7 @@ namespace BestestTVModPlugin
         public static ConfigEntry<bool> restrictChannels { get; set; }
         public static ConfigEntry<bool> tvLightEnabled { get; set; }
         public static ConfigEntry<VideoAspectRatio> tvScalingOption { get; set; }
+        public static ConfigEntry<Key> reloadVideosKeyBind { get; set; }
         public static ConfigEntry<Key> seekReverseKeyBind { get; set; }
         public static ConfigEntry<Key> seekForwardKeyBind { get; set; }
         public static ConfigEntry<Key> skipReverseKeyBind { get; set; }
@@ -205,7 +207,8 @@ namespace BestestTVModPlugin
         private ConfigManager(ConfigFile cfg)
         {
             configFile = cfg;
-            tvScalingOption = cfg.Bind("Options", "Aspect Ratio", VideoAspectRatio.FitVertically, "Available choices:\nNoScaling\nFitVertically\nFitHorizontally\nFitInside\nFitOutside\nStretch}");
+            tvScalingOption = cfg.Bind("Options", "Aspect Ratio", VideoAspectRatio.FitVertically, "Available choices:\nNoScaling\nFitVertically\nFitHorizontally\nFitInside\nFitOutside\nStretch");
+            shuffleVideos = cfg.Bind("Options", "Shuffle Videos", false, "Load videos in a random order instead of alphabetically");
             tvLightEnabled = cfg.Bind("Options", "Television Lights", true, "Do lights cast from television? If using Scaleable Television set this to false.");
             tvOnAlways = cfg.Bind("Options", "TV Always On", false, "Should the TV stay on after it's been turned on?\n Warning: TV Skips After Off On will skip twice as much with this enabled");
             tvPlaysSequentially = cfg.Bind("Options", "TV Plays Sequentially", true, "Play videos in order or loop?\n");
@@ -215,6 +218,7 @@ namespace BestestTVModPlugin
             mouseWheelVolume = cfg.Bind("Options", "Mouse Wheel Volume", true, "Should the mouse wheel control the volume?");
             hideHoverTip = cfg.Bind("Options", "Hide Hovertips", false, "Hide the controls when hovering over the TV");
             restrictChannels = cfg.Bind("Options", "Restrict Channels", false, "Disable the channel controls, but keep the UI, unless Hide Hovertips is also checked");
+            reloadVideosKeyBind = cfg.Bind("Bindings", "Reload Videos", Key.UpArrow, "Reload videos list, prevents having to restart if you turn shuffle on.");
             seekReverseKeyBind = cfg.Bind("Bindings", "Seek Backwards", Key.LeftBracket, "Go backwards in the currently playing video.");
             seekForwardKeyBind = cfg.Bind("Bindings", "Seek Forwards", Key.RightBracket, "Go forwards in the currently playing video.");
             skipReverseKeyBind = cfg.Bind("Bindings", "Skip Backwards", Key.Comma, "Skip to the previous video.");

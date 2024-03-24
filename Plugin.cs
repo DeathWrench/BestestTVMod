@@ -4,14 +4,24 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace BestestTVModPlugin
 {
-    [BepInPlugin("DeathWrench.BestestTelevisionMod", "​BestestTelevisionMod", "1.1.2")]
+    [BepInPlugin("DeathWrench.BestestTelevisionMod", "​BestestTelevisionMod", "1.2.0")]
     public class BestestTVModPlugin : BaseUnityPlugin
     {
         private static readonly Harmony Harmony = new Harmony("DeathWrench.BestestTelevisionMod");
         public static ManualLogSource Log = new ManualLogSource("BestestTelevisionMod");
+
+        private void Update()
+        {
+            var reloadVideosKey = ConfigManager.reloadVideosKeyBind.Value;
+            if (Keyboard.current[reloadVideosKey].isPressed)
+            {
+                VideoManager.Load();
+            }
+        }
 
         private void Awake()
         {
@@ -22,7 +32,7 @@ namespace BestestTVModPlugin
 
             // Load videos and log the count
             VideoManager.Load();
-            base.Logger.LogInfo($"PluginName: BestestTelevisionMod, VersionString: 1.1.2 is loaded.");
+            base.Logger.LogInfo($"PluginName: BestestTelevisionMod, VersionString: 1.2.0 is loaded.");
         }
 
         public static BestestTVModPlugin instance;
