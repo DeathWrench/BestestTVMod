@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Video;
 
 namespace BestestTVModPlugin
 {
-    [BepInPlugin("DeathWrench.BestestTelevisionMod", "​BestestTelevisionMod", "1.2.1")]
+    [BepInPlugin("DeathWrench.BestestTelevisionMod", "​BestestTelevisionMod", "1.2.2")]
     public class BestestTVModPlugin : BaseUnityPlugin
     {
         private static readonly Harmony Harmony = new Harmony("DeathWrench.BestestTelevisionMod");
@@ -38,10 +35,6 @@ namespace BestestTVModPlugin
         {
             VideoManager.Videos.Clear();
             VideoManager.Load();
-            if (ConfigManager.shuffleVideos.Value)
-            {
-                VideoManager.Shuffle(VideoManager.Videos);
-            }
             TVScriptPatches.videoSource = instance.gameObject.AddComponent<VideoPlayer>();
             TVScriptPatches.videoSource.playOnAwake = false;
             TVScriptPatches.videoSource.isLooping = false;
@@ -51,11 +44,11 @@ namespace BestestTVModPlugin
             TVScriptPatches.videoSource.SetTargetAudioSource(0, TVScriptPatches.audioSource);
             TVScriptPatches.videoSource.url = "file://" + VideoManager.Videos[TVScriptPatches.TVIndex];
             TVScriptPatches.videoSource.Prepare();
-            TVScriptPatches.videoSource.prepareCompleted += delegate (VideoPlayer source) { };
-
+            TVScriptPatches.SetTVIndex();
+            await Task.Delay(100); 
             // Hacky way of refreshing the list
             TVScriptPatches.TVIndexDown();
-            await Task.Delay(100); // Using Task.Delay as a replacement for WaitForSeconds
+            await Task.Delay(100);
             TVScriptPatches.TVIndexUp();
         }
 
@@ -74,7 +67,7 @@ namespace BestestTVModPlugin
 
             // Load videos and log the count
             VideoManager.Load();
-            base.Logger.LogInfo($"PluginName: BestestTelevisionMod, VersionString: 1.2.1 is loaded.");
+            base.Logger.LogInfo($"PluginName: BestestTelevisionMod, VersionString: 1.2.2 is loaded.");
         }
 
         public static BestestTVModPlugin instance;
