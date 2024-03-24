@@ -12,12 +12,12 @@ namespace BestestTVModPlugin
     [HarmonyPatch(typeof(TVScript))]
     internal class TVScriptPatches
     {
-        private static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static bool tvHasPlayedBefore = false;
-        private static RenderTexture renderTexture;
-        private static AudioSource audioSource;
-        private static VideoPlayer videoSource;
+        public static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
+        public static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
+        public static bool tvHasPlayedBefore = false;
+        public static RenderTexture renderTexture;
+        public static AudioSource audioSource;
+        public static VideoPlayer videoSource;
         public Light tvLight;
         public static int TVIndex;
 
@@ -177,7 +177,7 @@ namespace BestestTVModPlugin
                 videoSource.audioOutputMode = VideoAudioOutputMode.AudioSource;
                 videoSource.SetTargetAudioSource(0, audioSource);
                 videoSource.Stop();
-                //audioSource.Stop();
+                audioSource.Stop();
                 videoSource.Prepare();
             }
             else

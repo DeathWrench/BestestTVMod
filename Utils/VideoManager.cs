@@ -9,7 +9,6 @@ namespace BestestTVModPlugin
     {
         public static void Load()
         {
-            Videos.Clear(); // Clear the existing list before loading new videos
             foreach (string text in Directory.GetDirectories(Paths.PluginPath))
             {
                 string path = Path.Combine(Paths.PluginPath, text, "Television Videos");
@@ -41,7 +40,7 @@ namespace BestestTVModPlugin
         }
 
         // Method to shuffle the list
-        private static void Shuffle<T>(IList<T> list)
+        public static void Shuffle<T>(IList<T> list)
         {
             Random rng = new Random();
 
@@ -70,7 +69,7 @@ namespace BestestTVModPlugin
             }
         }
 
-        private static void FisherYatesShuffle<T>(IList<T> list)
+        public static void FisherYatesShuffle<T>(IList<T> list)
         {
             Random rng = new Random();
             int n = list.Count;
@@ -83,7 +82,7 @@ namespace BestestTVModPlugin
             }
         }
 
-        private static void DurstenfeldShuffle<T>(IList<T> list)
+        public static void DurstenfeldShuffle<T>(IList<T> list)
         {
             Random rng = new Random();
             int n = list.Count;
@@ -96,7 +95,7 @@ namespace BestestTVModPlugin
             }
         }
 
-        private static void InsideOutShuffle<T>(IList<T> list)
+        public static void InsideOutShuffle<T>(IList<T> list)
         {
             Random rng = new Random();
             int n = list.Count;
@@ -112,7 +111,7 @@ namespace BestestTVModPlugin
             }
         }
 
-        private static void SattoloShuffle<T>(IList<T> list)
+        public static void SattoloShuffle<T>(IList<T> list)
         {
             Random rng = new Random();
             int n = list.Count;
@@ -125,7 +124,7 @@ namespace BestestTVModPlugin
             }
         }
 
-        private static void RandomPerfectShuffle<T>(IList<T> list)
+        public static void RandomPerfectShuffle<T>(IList<T> list)
         {
             Random rng = new Random();
             int n = list.Count;

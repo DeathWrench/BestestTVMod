@@ -125,7 +125,7 @@ namespace BestestTVModPlugin
                 case Key.Pause:
                 case Key.NumpadEnter:
                 case Key.NumpadDivide:
-                    return "[Ã·]";
+                    return "[÷]";
                 case Key.NumpadMultiply:
                     return "[*]";
                 case Key.NumpadPlus:
@@ -187,7 +187,8 @@ namespace BestestTVModPlugin
         {
             Instance = new ConfigManager(config);
         }
-    public static ConfigEntry<bool> tvOnAlways { get; set; }
+
+        public static ConfigEntry<bool> tvOnAlways { get; set; }
         public static ConfigEntry<bool> tvPlaysSequentially { get; set; }
         public static ConfigEntry<bool> tvSkipsAfterOffOn { get; set; }
         public static ConfigEntry<bool> shuffleVideos { get; set; }
@@ -204,6 +205,7 @@ namespace BestestTVModPlugin
         public static ConfigEntry<Key> skipReverseKeyBind { get; set; }
         public static ConfigEntry<Key> skipForwardKeyBind { get; set; }
         public static ConfigFile configFile { get; private set; }
+
         private ConfigManager(ConfigFile cfg)
         {
             configFile = cfg;
