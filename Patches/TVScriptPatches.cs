@@ -165,19 +165,16 @@ namespace BestestTVModPlugin
                 videoSource.clip = null;
                 audioSource.clip = null;
 
-                
                 // Build the video URL
                 string videoUrl = "file://" + VideoManager.Videos[TVIndex];
-
                 BestestTVModPlugin.Log.LogInfo(videoUrl);
-
                 videoSource.url = videoUrl;
                 videoSource.source = VideoSource.Url;
                 videoSource.controlledAudioTrackCount = 1;
                 videoSource.audioOutputMode = VideoAudioOutputMode.AudioSource;
                 videoSource.SetTargetAudioSource(0, audioSource);
                 videoSource.Stop();
-                audioSource.Stop();
+                //audioSource.Stop();
                 videoSource.Prepare();
             }
             else
