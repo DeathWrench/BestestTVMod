@@ -14,7 +14,7 @@ namespace BestestTVModPlugin
     internal class TVScriptPatches
     {
         public static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
-        public static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
+        //public static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
         public static bool tvIsCurrentlyOn = false;
         public static RenderTexture renderTexture;
         public static AudioSource audioSource;
@@ -60,7 +60,7 @@ namespace BestestTVModPlugin
 
             if (on)
             {
-                BestestTVModPlugin.Log.LogInfo("Turning on TV");
+                if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("Turning on TV"); }
                 SetTVScreenMaterial(__instance, true);
                 tvIsCurrentlyOn = true;
                 audioSource.Play();
@@ -84,7 +84,7 @@ namespace BestestTVModPlugin
 
                 if (!ConfigManager.tvOnAlways.Value)
                 {
-                    BestestTVModPlugin.Log.LogInfo("Turning off TV");
+                    if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("Turning off TV"); }
                     SetTVScreenMaterial(__instance, false);
                     audioSource.Stop();
                     videoSource.Stop();
@@ -94,7 +94,7 @@ namespace BestestTVModPlugin
                 }
                 else
                 {
-                    BestestTVModPlugin.Log.LogInfo("Turning on TV");
+                    if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("Turning on TV"); }
                     SetTVScreenMaterial(__instance, true);
                     tvIsCurrentlyOn = true;
                     audioSource.Play();
@@ -116,7 +116,7 @@ namespace BestestTVModPlugin
             videoSource.Stop();
             videoSource.time = 0.0;
             videoSource.url = "file://" + VideoManager.Videos[TVIndex];
-            currentTimeProperty.SetValue(videoSource, 0f);
+            //currentTimeProperty.SetValue(videoSource, 0f);
             currentClipProperty.SetValue(videoSource, TVIndex);
         }
         public static void TVIndexDown()
@@ -127,7 +127,7 @@ namespace BestestTVModPlugin
                 videoSource.Stop();
                 videoSource.time = 0.0;
                 videoSource.url = "file://" + VideoManager.Videos[TVIndex];
-                currentTimeProperty.SetValue(videoSource, 0f);
+                //currentTimeProperty.SetValue(videoSource, 0f);
                 currentClipProperty.SetValue(videoSource, TVIndex);
             }
             else
@@ -185,7 +185,7 @@ namespace BestestTVModPlugin
             else
             {
                 // Handle the case where VideoManager.Videos is empty
-                BestestTVModPlugin.Log.LogError("VideoManager.Videos list is empty. Put some videos in Television Videos folder.");
+                if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogError("VideoManager.Videos list is empty. Put some videos in Television Videos folder."); }
             }
         }
 
@@ -197,7 +197,7 @@ namespace BestestTVModPlugin
             InteractTrigger interactTrigger = (parent != null) ? parent.GetComponentInChildren<InteractTrigger>() : null;
             if (interactTrigger == null || !ConfigManager.enableSeeking.Value && !ConfigManager.enableChannels.Value && !ConfigManager.mouseWheelVolume.Value)
             {
-                BestestTVModPlugin.Log.LogInfo("Television trigger missing!");
+                if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("Television trigger missing!"); }
             }
         }
 
@@ -234,13 +234,13 @@ namespace BestestTVModPlugin
                         if (currentTime < 0.0)
                         {
                             currentTime = 0.0;
-                            BestestTVModPlugin.Log.LogInfo("AdjustTime: " + currentTime.ToString());
+                            if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("AdjustTime: " + currentTime.ToString()); }
                         }
                         else
                         {
                             videoSource.time = audioSource.time;
                             videoSource.time = currentTime;
-                            BestestTVModPlugin.Log.LogInfo("AdjustTime: " + currentTime.ToString());
+                            if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("AdjustTime: " + currentTime.ToString()); }
                         }
                     }
 
@@ -249,7 +249,7 @@ namespace BestestTVModPlugin
                         currentTime += 15.0;
                         videoSource.time = audioSource.time;
                         videoSource.time = currentTime;
-                        BestestTVModPlugin.Log.LogInfo("AdjustTime: " + currentTime.ToString());
+                        if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("AdjustTime: " + currentTime.ToString()); }
                     }
 
                     if (Keyboard.current[skipReverseKey].wasPressedThisFrame && ConfigManager.enableChannels.Value && !ConfigManager.restrictChannels.Value)
@@ -271,7 +271,7 @@ namespace BestestTVModPlugin
 
                     InteractTrigger interactTrigger = parent.GetComponentInChildren<InteractTrigger>();
                     if (interactTrigger == null)
-                        BestestTVModPlugin.Log.LogInfo("Television trigger missing!");
+                        if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("Television trigger missing!"); }
 
                     string seekInfo = "Seek: " + KeySymbolConverter.GetKeySymbol(seekReverseKey) + KeySymbolConverter.GetKeySymbol(seekForwardKey) + "\n" + TimeSpan.FromSeconds(currentTime).ToString(@"hh\:mm\:ss\.fff");
                     string volumeInfo = "Volume: " + KeySymbolConverter.GetKeySymbol(Key.Minus) + KeySymbolConverter.GetKeySymbol(Key.NumpadPlus) + "\n" + (volume * 150).ToString("0") + "%";
@@ -306,7 +306,7 @@ namespace BestestTVModPlugin
                         //videoSource.time = 0.0;
                         //videoSource.url = "file://" + VideoManager.Videos[TVIndex];
                         //currentClipProperty.SetValue(videoSource, TVIndex);
-                        BestestTVModPlugin.Log.LogInfo("AdjustMediaFile: " + VideoManager.Videos[TVIndex]);
+                        if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("AdjustMediaFile: " + VideoManager.Videos[TVIndex]); }
                         if (!videoSource.isPlaying || !tvIsCurrentlyOn)
                         {
                             currentTime = 0.0;
@@ -320,7 +320,7 @@ namespace BestestTVModPlugin
                         scrollDelta /= 6000f;
                         volume = Mathf.Clamp(volume + scrollDelta, 0f, 1f);
                         audioSource.volume = volume;
-                        BestestTVModPlugin.Log.LogInfo("Changed volume: " + volume.ToString());
+                        if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("Changed volume: " + volume.ToString()); }
                     }
                 }
             }
