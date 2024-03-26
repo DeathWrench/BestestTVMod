@@ -12,10 +12,10 @@ Bestest TV Mod enhances your in-game television experience by combining the best
 
 - **Folder Utilization**: Utilizes the "Television Videos" folder (TVLoader) instead of "media" (LethalTVManager) for easier video management.
 - **Aspect Ratio Options**: Choose from various aspect ratio settings to suit your preference.
-- **TV Always On**: Keep the TV running continuously without manual activation.
+- **TV Always On**: Keep the TV running continuously without manual re-activation.
 - **Sequential Video Playback**: Videos play in sequence for a more immersive viewing experience.
 - **Shuffle Videos**: Load videos in a random order instead of alphabetically.
-- **Custom Keybinds**: Set custom keybinds for scanning, skipping, reloading videos, seeking, and more.
+- **Custom Keybinds**: Set custom keybinds for scanning, skipping, seeking, and reloading videos.
 - **Turn Off and On to Skip**: Easily skip to the next video by turning off and back on the TV. (TVLoader)
 - **Seeking and Channel Controls**: Enable seeking with brackets and skip videos using comma or period keys. (LethalTVManager)
 - **Mouse Wheel Volume Control**: Control the volume using the mouse wheel. (LethalTVManager)
