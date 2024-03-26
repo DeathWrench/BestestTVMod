@@ -15,11 +15,10 @@ Bestest TV Mod enhances your in-game television experience by combining the best
 - **TV Always On**: Keep the TV running continuously without manual activation.
 - **Sequential Video Playback**: Videos play in sequence for a more immersive viewing experience.
 - **Shuffle Videos**: Load videos in a random order instead of alphabetically.
-- **Scan, Volume, and Video Skipping**: Enjoy control over scanning, volume adjustment, and video skipping functionalities with the ability to hide prompts.
 - **Custom Keybinds**: Set custom keybinds for scanning, skipping, reloading videos, seeking, and more.
-- **Turn Off and On to Skip**: Easily skip to the next video by turning off and back on the TV.
-- **Seeking and Channel Controls**: Enable seeking with brackets and skip videos using comma or period keys.
-- **Mouse Wheel Volume Control**: Control the volume using the mouse wheel.
+- **Turn Off and On to Skip**: Easily skip to the next video by turning off and back on the TV. (TVLoader)
+- **Seeking and Channel Controls**: Enable seeking with brackets and skip videos using comma or period keys. (LethalTVManager)
+- **Mouse Wheel Volume Control**: Control the volume using the mouse wheel. (LethalTVManager)
 - **Hide Hovertips**: Hide the controls when hovering over the TV for a cleaner interface.
 - **Restrict Channels**: Disable the channel controls while keeping the UI visible, unless Hide Hovertips is also checked.
 
