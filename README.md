@@ -1,17 +1,40 @@
 # Bestest TV Mod
-I just combined these two mods:  
+
+Welcome to Bestest TV Mod, a fusion of two popular mods:
 - [TVLoader](https://thunderstore.io/c/lethal-company/p/Rattenbonkers/TVLoader/)
 - [LethalTVManager](https://thunderstore.io/c/lethal-company/p/Bushwacc/LethalTVManager/)
-#### ~~Lot's of stuff to get rid of and improve about this code~~ 
-# Most bugs have now been fixed. 
-## Features and config options
-- Uses "Television Videos" folder (TVLoader) instead of "media" (LethalTVManager)
-- Aspect ratio options
-- TV Always On.
-- Videos play sequentially (TVLoader)
-- Scan, volume, and skipping videos (LethalTVManager) with ability to hide the prompts
-- Turn off and back on to skip (TVLoader)
-## I recommend to use [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/) to be able to adjust these options in game. 
-## If you want to scale the TV as well: [ScaleableTelevision](https://thunderstore.io/c/lethal-company/p/DeathWrench/ScaleableTelevision/)
-#### ~~This will automatically move .mp4's into the correct folder: [Television Videos Fix](https://thunderstore.io/c/lethal-company/p/DeathWrench/TelevisionVideosFix/)~~ 
-# No longer required.
+
+## Overview
+
+Bestest TV Mod enhances your in-game television experience by combining the best features of TVLoader and LethalTVManager. With numerous improvements and bug fixes, this mod provides a seamless and customizable TV viewing experience for players.
+
+## Features and Config Options
+
+- **Folder Utilization**: Utilizes the "Television Videos" folder (TVLoader) instead of "media" (LethalTVManager) for easier video management.
+- **Aspect Ratio Options**: Choose from various aspect ratio settings to suit your preference.
+- **TV Always On**: Keep the TV running continuously without manual activation.
+- **Sequential Video Playback**: Videos play in sequence for a more immersive viewing experience.
+- **Shuffle Videos**: Load videos in a random order instead of alphabetically.
+- **Scan, Volume, and Video Skipping**: Enjoy control over scanning, volume adjustment, and video skipping functionalities with the ability to hide prompts.
+- **Custom Keybinds**: Set custom keybinds for scanning, skipping, reloading videos, seeking, and more.
+- **Turn Off and On to Skip**: Easily skip to the next video by turning off and back on the TV.
+- **Seeking and Channel Controls**: Enable seeking with brackets and skip videos using comma or period keys.
+- **Mouse Wheel Volume Control**: Control the volume using the mouse wheel.
+- **Hide Hovertips**: Hide the controls when hovering over the TV for a cleaner interface.
+- **Restrict Channels**: Disable the channel controls while keeping the UI visible, unless Hide Hovertips is also checked.
+
+## Recommendations
+
+For convenient in-game adjustments, I recommend using [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/). This tool allows you to tweak various options according to your preferences without leaving the game environment.
+
+If you want to scale the TV size as well, consider installing [ScaleableTelevision](https://thunderstore.io/c/lethal-company/p/DeathWrench/ScaleableTelevision/), which provides additional customization options for TV dimensions.
+
+## Additional Tools
+
+For downloading YouTube videos directly into your "Television Videos" folder, check out [YoutubeDownloader](https://thunderstore.io/c/lethal-company/p/DeathWrench/YoutubeDownloader/).
+
+## Note
+
+The automatic relocation of .mp4 files into the correct folder, previously facilitated by [Television Videos Fix](https://thunderstore.io/c/lethal-company/p/DeathWrench/TelevisionVideosFix/), is no longer required, though you can still use it.
+
+Experience enhanced TV entertainment with Bestest TV Mod!
