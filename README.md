@@ -24,7 +24,7 @@ Bestest TV Mod enhances your in-game television experience by combining the best
 
 ## Recommendations
 
-For convenient in-game adjustments, I recommend using [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/). This tool allows you to tweak various options according to your preferences without leaving the game environment.
+For convenient in-game adjustments, I recommend using [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/). This tool allows you to tweak various options without leaving the game environment.
 
 If you want to scale the TV size as well, consider installing [ScaleableTelevision](https://thunderstore.io/c/lethal-company/p/DeathWrench/ScaleableTelevision/), which provides additional customization options for TV dimensions.
 
