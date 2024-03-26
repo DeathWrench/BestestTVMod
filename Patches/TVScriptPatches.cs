@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace BestestTVModPlugin
     {
         public static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
         public static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
-        public static bool tvHasPlayedBefore = false;
+        public static bool tvIsCurrentlyOn = false;
         public static RenderTexture renderTexture;
         public static AudioSource audioSource;
         public static VideoPlayer videoSource;
@@ -50,53 +51,57 @@ namespace BestestTVModPlugin
         {
             __instance.tvOn = on;
             audioSource = __instance.tvSFX;
+            videoSource = __instance.video;
 
             if (videoSource.source != VideoSource.Url || videoSource.url == "")
             {
-                WhatItDo(__instance);
+                WhatItDo(__instance, TVIndex);
             }
 
             if (on)
             {
                 BestestTVModPlugin.Log.LogInfo("Turning on TV");
                 SetTVScreenMaterial(__instance, true);
-                if (on && ConfigManager.tvSkipsAfterOffOn.Value)
-                {
-                    TVIndexUp();
-                }
-                tvHasPlayedBefore = true;
+                tvIsCurrentlyOn = true;
                 audioSource.Play();
                 videoSource.Play();
                 videoSource.time = audioSource.time;
-                __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
+                audioSource.PlayOneShot(__instance.switchTVOn);
                 WalkieTalkie.TransmitOneShotAudio(__instance.tvSFX, __instance.switchTVOn, 1f);
             }
             else
             {
+                if (ConfigManager.tvSkipsAfterOffOn.Value)
+                {
+                    videoSource.source = VideoSource.Url;
+                    videoSource.controlledAudioTrackCount = 1;
+                    videoSource.audioOutputMode = VideoAudioOutputMode.AudioSource;
+                    videoSource.SetTargetAudioSource(0, audioSource);
+                    videoSource.url = "file://" + VideoManager.Videos[TVIndex + 1];
+                    TVIndex = TVIndex + 1;
+                    videoSource.Prepare();
+                }
+
                 if (!ConfigManager.tvOnAlways.Value)
                 {
                     BestestTVModPlugin.Log.LogInfo("Turning off TV");
                     SetTVScreenMaterial(__instance, false);
                     audioSource.Stop();
                     videoSource.Stop();
-                    __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
-                    WalkieTalkie.TransmitOneShotAudio(__instance.tvSFX, __instance.switchTVOff, 1f);
-                    tvHasPlayedBefore = false;
+                    audioSource.PlayOneShot(__instance.switchTVOn);
+                    WalkieTalkie.TransmitOneShotAudio(audioSource, __instance.switchTVOff, 1f);
+                    tvIsCurrentlyOn = false;
                 }
                 else
                 {
                     BestestTVModPlugin.Log.LogInfo("Turning on TV");
                     SetTVScreenMaterial(__instance, true);
-                    if (!on && ConfigManager.tvSkipsAfterOffOn.Value)
-                    {
-                        TVIndexUp();
-                    }
-                    tvHasPlayedBefore = true;
+                    tvIsCurrentlyOn = true;
                     audioSource.Play();
                     videoSource.Play();
                     videoSource.time = audioSource.time;
-                    __instance.tvSFX.PlayOneShot(__instance.switchTVOn);
-                    WalkieTalkie.TransmitOneShotAudio(__instance.tvSFX, __instance.switchTVOn, 1f);
+                    audioSource.PlayOneShot(__instance.switchTVOn);
+                    WalkieTalkie.TransmitOneShotAudio(audioSource, __instance.switchTVOn, 1f);
                 }
             }
             return false;
@@ -111,6 +116,7 @@ namespace BestestTVModPlugin
             videoSource.Stop();
             videoSource.time = 0.0;
             videoSource.url = "file://" + VideoManager.Videos[TVIndex];
+            currentTimeProperty.SetValue(videoSource, 0f);
             currentClipProperty.SetValue(videoSource, TVIndex);
         }
         public static void TVIndexDown()
@@ -121,6 +127,7 @@ namespace BestestTVModPlugin
                 videoSource.Stop();
                 videoSource.time = 0.0;
                 videoSource.url = "file://" + VideoManager.Videos[TVIndex];
+                currentTimeProperty.SetValue(videoSource, 0f);
                 currentClipProperty.SetValue(videoSource, TVIndex);
             }
             else
@@ -139,7 +146,7 @@ namespace BestestTVModPlugin
 
         [HarmonyPatch(typeof(TVScript), "TVFinishedClip")]
         [HarmonyPrefix]
-        public static bool TVFinishedClip(TVScript __instance, VideoPlayer source)
+        public static bool TVFinishedClip(TVScript __instance)
         {
             if (!__instance.tvOn || GameNetworkManager.Instance.localPlayerController.isInsideFactory)
             {
@@ -150,8 +157,6 @@ namespace BestestTVModPlugin
             {
                 TVIndexUp();
             }
-            currentTimeProperty.SetValue(videoSource, 0f);
-            currentClipProperty.SetValue(videoSource, TVIndex);
             WhatItDo(__instance, TVIndex);
             return false;
         }
@@ -257,7 +262,7 @@ namespace BestestTVModPlugin
                         TVIndexUp();
                     }
 
-                    if (!videoSource.isPlaying || !tvHasPlayedBefore) 
+                    if (!videoSource.isPlaying || !tvIsCurrentlyOn) 
                     {
                         currentTime = 0.0;
                         videoSource.time = audioSource.time;
@@ -302,7 +307,7 @@ namespace BestestTVModPlugin
                         //videoSource.url = "file://" + VideoManager.Videos[TVIndex];
                         //currentClipProperty.SetValue(videoSource, TVIndex);
                         BestestTVModPlugin.Log.LogInfo("AdjustMediaFile: " + VideoManager.Videos[TVIndex]);
-                        if (!videoSource.isPlaying || !tvHasPlayedBefore)
+                        if (!videoSource.isPlaying || !tvIsCurrentlyOn)
                         {
                             currentTime = 0.0;
                             videoSource.time = audioSource.time;
