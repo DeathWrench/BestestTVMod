@@ -188,6 +188,7 @@ namespace BestestTVModPlugin
             Instance = new ConfigManager(config);
         }
 
+        public static ConfigEntry<bool> enableLogging { get; set; }
         public static ConfigEntry<bool> tvOnAlways { get; set; }
         public static ConfigEntry<bool> tvPlaysSequentially { get; set; }
         public static ConfigEntry<bool> tvSkipsAfterOffOn { get; set; }
@@ -225,6 +226,7 @@ namespace BestestTVModPlugin
             seekForwardKeyBind = cfg.Bind("Bindings", "Seek Forwards", Key.RightBracket, "Go forwards in the currently playing video.");
             skipReverseKeyBind = cfg.Bind("Bindings", "Skip Backwards", Key.Comma, "Skip to the previous video.");
             skipForwardKeyBind = cfg.Bind("Bindings", "Skip Forwards", Key.Period, "Skip to the next video.");
+            enableLogging = cfg.Bind("Debug", "Logging Enabled", false, "Is logging enabled?");
         }
     }
 }
