@@ -1,3 +1,11 @@
+## 1.2.6
+- Add a prompt that can be toggled, indicating when videos have been reloaded.
+- Fix some logs not being disabled when Logging was set to false.
+
+## 1.2.5
+- Remove unnecessary method. 
+- Added ```Enable Logging``` config option
+
 ## 1.2.4
 - Fix TV Skips After Off On
 
