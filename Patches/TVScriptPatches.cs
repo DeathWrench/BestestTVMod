@@ -152,7 +152,7 @@ namespace BestestTVModPlugin
             {
                 return false;
             }
-            BestestTVModPlugin.Log.LogInfo("TVFinishedClip");
+            if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("TVFinishedClip"); }
             if (VideoManager.Videos.Count > 0 && ConfigManager.tvPlaysSequentially.Value)
             {
                 TVIndexUp();
@@ -172,7 +172,7 @@ namespace BestestTVModPlugin
 
                 // Build the video URL
                 string videoUrl = "file://" + VideoManager.Videos[TVIndex];
-                BestestTVModPlugin.Log.LogInfo(videoUrl);
+                if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo(videoUrl); }
                 videoSource.url = videoUrl;
                 videoSource.source = VideoSource.Url;
                 videoSource.controlledAudioTrackCount = 1;

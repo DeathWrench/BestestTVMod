@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -7,7 +9,7 @@ using UnityEngine.Video;
 
 namespace BestestTVModPlugin
 {
-    [BepInPlugin("DeathWrench.BestestTelevisionMod", "​BestestTelevisionMod", "1.2.4")]
+    [BepInPlugin("DeathWrench.BestestTelevisionMod", "​BestestTelevisionMod", "1.2.6")]
     public class BestestTVModPlugin : BaseUnityPlugin
     {
         private static readonly Harmony Harmony = new Harmony("DeathWrench.BestestTelevisionMod");
@@ -27,19 +29,15 @@ namespace BestestTVModPlugin
             if (ctx.ReadValueAsButton())
             {
                 await RefreshVideos(); 
-                OnReloadVideos();
             }
         }
 
-        private void OnReloadVideos()
-        {
-            HUDManager.Instance.DisplayTip("Reloaded Videos", "Video list has been reloaded.", false, false, "ReloadVideosTip");
-        }
-
-        private async Task ReloadVideos()
+        private void ReloadVideos()
         {
             VideoManager.Videos.Clear();
             VideoManager.Load();
+            if (ConfigManager.reloadedVideosHUD.Value)
+            { HUDManager.Instance.DisplayTip("Reloaded Videos", "Video list has been reloaded.", false, false, "ReloadVideosTip"); }
         }
         private async Task RefreshVideos()
         {
@@ -59,7 +57,6 @@ namespace BestestTVModPlugin
             TVScriptPatches.TVIndexDown();
             await Task.Delay(100);
             TVScriptPatches.TVIndexUp();
-            OnReloadVideos();
         }
 
         private void OnDisable()
@@ -77,7 +74,7 @@ namespace BestestTVModPlugin
 
             // Load videos and log the count
             VideoManager.Load();
-            base.Logger.LogInfo("BestestTelevisionMod 1.2.4 is loaded!");
+            base.Logger.LogInfo("BestestTelevisionMod 1.2.5 is loaded!");
         }
 
         public static BestestTVModPlugin instance;

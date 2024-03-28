@@ -16,7 +16,7 @@ namespace BestestTVModPlugin
                 {
                     string[] files = Directory.GetFiles(path, "*.mp4");
                     Videos.AddRange(files);
-                    BestestTVModPlugin.Log.LogInfo($"{text} has {files.Length} videos.");
+                    if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo($"{text} has {files.Length} videos."); }
                 }
             }
 
@@ -29,9 +29,9 @@ namespace BestestTVModPlugin
 
             string[] globalFiles = Directory.GetFiles(globalPath, "*.mp4");
             Videos.AddRange(globalFiles);
-            BestestTVModPlugin.Log.LogInfo($"Global has {globalFiles.Length} videos.");
+            if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo($"Global has {globalFiles.Length} videos."); }
 
-            BestestTVModPlugin.Log.LogInfo($"Loaded {Videos.Count} total.");
+            if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo($"Loaded {Videos.Count} total."); }
 
             if (ConfigManager.shuffleVideos.Value)
             {
