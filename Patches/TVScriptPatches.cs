@@ -13,6 +13,7 @@ namespace BestestTVModPlugin
     [HarmonyPatch(typeof(TVScript))]
     internal class TVScriptPatches
     {
+        public static MethodInfo aspectRatio = typeof(VideoPlayer).GetMethod("VideoAspectRatio", BindingFlags.Instance | BindingFlags.NonPublic);
         public static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
         //public static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
         public static bool tvIsCurrentlyOn = false;
