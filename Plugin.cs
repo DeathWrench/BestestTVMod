@@ -9,14 +9,14 @@ using UnityEngine.Video;
 
 namespace BestestTVModPlugin
 {
-    [BepInPlugin($"{PLUGIN_GUID}", $"{​PLUGIN_NAME}", $"{PLUGIN_VERSION}")]
+    [BepInPlugin($"{PLUGIN_GUID}", $"{PLUGIN_NAME}", $"{PLUGIN_VERSION}")]
     public class BestestTVModPlugin : BaseUnityPlugin
     {
         public const string PLUGIN_GUID = "DeathWrench.BestestTelevisionMod";
         public const string PLUGIN_NAME = "BestestTelevisionMod";
         public const string PLUGIN_VERSION = "1.2.8";
-        private static readonly Harmony Harmony = new Harmony($"{PLUGIN_GUID}");
-        public static ManualLogSource Log = new ManualLogSource($"{​PLUGIN_NAME}");
+        private static readonly Harmony Harmony = new Harmony(PLUGIN_GUID.ToString());
+        public static ManualLogSource Log = new ManualLogSource($"​{PLUGIN_NAME}");
         private InputAction reloadVideosAction;
 
         private void Start()
