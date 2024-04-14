@@ -11,7 +11,7 @@ namespace BestestTVModPlugin
 {
 
     [HarmonyPatch(typeof(TVScript))]
-    internal class TVScriptPatches
+    public class TVScriptPatches
     {
         public static MethodInfo aspectRatio = typeof(VideoPlayer).GetMethod("VideoAspectRatio", BindingFlags.Instance | BindingFlags.NonPublic);
         public static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -187,6 +187,21 @@ namespace BestestTVModPlugin
             {
                 // Handle the case where VideoManager.Videos is empty
                 if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogError("VideoManager.Videos list is empty. Put some videos in Television Videos folder."); }
+            }
+        }
+
+        [HarmonyPatch(typeof(ShipBuildModeManager), "StoreShipObjectClientRpc")]
+        [HarmonyPostfix]
+        private static void StoreShipObjectClientRpcPostfix(int unlockableID)
+        {
+            if (ConfigManager.storingResets.Value) 
+            {
+                UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[unlockableID];
+                if (unlockableItem.inStorage && unlockableItem.unlockableName == "Television" && TVIndex != 0)
+                {
+                    if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("Resetting play sequence..."); }
+                    SetTVIndex();
+                }
             }
         }
 

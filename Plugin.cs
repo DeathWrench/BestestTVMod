@@ -9,11 +9,14 @@ using UnityEngine.Video;
 
 namespace BestestTVModPlugin
 {
-    [BepInPlugin("DeathWrench.BestestTelevisionMod", "​BestestTelevisionMod", "1.2.7")]
+    [BepInPlugin($"{PLUGIN_GUID}", $"{​PLUGIN_NAME}", $"{PLUGIN_VERSION}")]
     public class BestestTVModPlugin : BaseUnityPlugin
     {
-        private static readonly Harmony Harmony = new Harmony("DeathWrench.BestestTelevisionMod");
-        public static ManualLogSource Log = new ManualLogSource("BestestTelevisionMod");
+        public const string PLUGIN_GUID = "DeathWrench.BestestTelevisionMod";
+        public const string PLUGIN_NAME = "BestestTelevisionMod";
+        public const string PLUGIN_VERSION = "1.2.8";
+        private static readonly Harmony Harmony = new Harmony($"{PLUGIN_GUID}");
+        public static ManualLogSource Log = new ManualLogSource($"{​PLUGIN_NAME}");
         private InputAction reloadVideosAction;
 
         private void Start()
@@ -32,14 +35,14 @@ namespace BestestTVModPlugin
             }
         }
 
-        private void ReloadVideos()
+        public void ReloadVideos()
         {
             VideoManager.Videos.Clear();
             VideoManager.Load();
             if (ConfigManager.reloadedVideosHUD.Value)
             { HUDManager.Instance.DisplayTip("Reloaded Videos", "Video list has been reloaded.", false, false, "ReloadVideosTip"); }
         }
-        private async Task RefreshVideos()
+        public async Task RefreshVideos()
         {
             ReloadVideos();
             TVScriptPatches.videoSource = instance.gameObject.AddComponent<VideoPlayer>();
@@ -74,7 +77,7 @@ namespace BestestTVModPlugin
 
             // Load videos and log the count
             VideoManager.Load();
-            base.Logger.LogInfo("BestestTelevisionMod 1.2.7 is loaded!");
+            base.Logger.LogInfo($"{PLUGIN_GUID} {PLUGIN_VERSION} is loaded!");
         }
 
         public static BestestTVModPlugin instance;

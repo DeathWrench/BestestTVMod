@@ -189,6 +189,7 @@ namespace BestestTVModPlugin
         }
 
         public static ConfigEntry<bool> enableLogging { get; set; }
+        public static ConfigEntry<bool> storingResets { get; set; }
         public static ConfigEntry<bool> reloadedVideosHUD { get; set; }
         public static ConfigEntry<bool> tvOnAlways { get; set; }
         public static ConfigEntry<bool> tvPlaysSequentially { get; set; }
@@ -212,6 +213,7 @@ namespace BestestTVModPlugin
         {
             configFile = cfg;
             tvScalingOption = cfg.Bind("Options", "Aspect Ratio", VideoAspectRatio.FitVertically, "Available choices:\nNoScaling\nFitVertically\nFitHorizontally\nFitInside\nFitOutside\nStretch");
+            storingResets = cfg.Bind("Options", "Storing Resets List", true, "Does storing the video reset the video index back to 1?");
             shuffleVideos = cfg.Bind("Options", "Shuffle Videos", false, "Load videos in a random order instead of alphabetically");
             tvLightEnabled = cfg.Bind("Options", "Television Lights", true, "Does light emit from the television when it is turned on?");
             tvOnAlways = cfg.Bind("Options", "TV Always On", false, "Should the TV stay on after it's been turned on once?\n");
