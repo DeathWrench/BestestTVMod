@@ -125,7 +125,7 @@ namespace BestestTVModPlugin
                 case Key.Pause:
                 case Key.NumpadEnter:
                 case Key.NumpadDivide:
-                    return "[÷]";
+                    return "[Ã·]";
                 case Key.NumpadMultiply:
                     return "[*]";
                 case Key.NumpadPlus:
@@ -213,7 +213,7 @@ namespace BestestTVModPlugin
         {
             configFile = cfg;
             tvScalingOption = cfg.Bind("Options", "Aspect Ratio", VideoAspectRatio.FitVertically, "Available choices:\nNoScaling\nFitVertically\nFitHorizontally\nFitInside\nFitOutside\nStretch");
-            storingResets = cfg.Bind("Options", "Storing Resets List", true, "Does storing the video reset the video index back to 1?");
+            storingResets = cfg.Bind("Options", "Storing Resets List", true, "Does storing the television reset the video index back to 1?");
             shuffleVideos = cfg.Bind("Options", "Shuffle Videos", false, "Load videos in a random order instead of alphabetically");
             tvLightEnabled = cfg.Bind("Options", "Television Lights", true, "Does light emit from the television when it is turned on?");
             tvOnAlways = cfg.Bind("Options", "TV Always On", false, "Should the TV stay on after it's been turned on once?\n");
