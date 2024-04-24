@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Video;
 
@@ -13,11 +14,12 @@ namespace BestestTVModPlugin
     public class BestestTVModPlugin : BaseUnityPlugin
     {
         public const string PLUGIN_GUID = "DeathWrench.BestestTelevisionMod";
-        public const string PLUGIN_NAME = "BestestTelevisionMod";
-        public const string PLUGIN_VERSION = "1.2.8";
+        public const string PLUGIN_NAME = "\u200bBestestTelevisionMod";
+        public const string PLUGIN_VERSION = "1.3.0";
         private static readonly Harmony Harmony = new Harmony(PLUGIN_GUID.ToString());
         public static ManualLogSource Log = new ManualLogSource($"​{PLUGIN_NAME}");
         private InputAction reloadVideosAction;
+        GameObject gameObject;
 
         private void Start()
         {
@@ -79,7 +81,6 @@ namespace BestestTVModPlugin
             VideoManager.Load();
             base.Logger.LogInfo($"{PLUGIN_GUID} {PLUGIN_VERSION} is loaded!");
         }
-
         public static BestestTVModPlugin instance;
     }
 }
