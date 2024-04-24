@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Threading;
 using GameNetcodeStuff;
 using HarmonyLib;
 using UnityEngine;
@@ -14,8 +13,8 @@ namespace BestestTVModPlugin
     public class TVScriptPatches
     {
         public static MethodInfo aspectRatio = typeof(VideoPlayer).GetMethod("VideoAspectRatio", BindingFlags.Instance | BindingFlags.NonPublic);
-        public static FieldInfo currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
-        //public static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
+        public static FieldInfo ?currentClipProperty = typeof(TVScript).GetField("currentClip", BindingFlags.Instance | BindingFlags.NonPublic);
+        public static FieldInfo currentTimeProperty = typeof(TVScript).GetField("currentClipTime", BindingFlags.Instance | BindingFlags.NonPublic);
         public static bool tvIsCurrentlyOn = false;
         public static RenderTexture renderTexture;
         public static AudioSource audioSource;
@@ -28,12 +27,17 @@ namespace BestestTVModPlugin
         public static void SetTVIndex()
         {
             TVIndex = 0;
+            tvIsCurrentlyOn = false;
         }
 
         [HarmonyPatch(typeof(TVScript), "Update")]
         [HarmonyPrefix]
         public static bool Update(TVScript __instance)
         {
+            if (tvIsCurrentlyOn == false)
+            {
+                TVScriptPatches.SetTVScreenMaterial(__instance, false);
+            }
             if (videoSource == null)
             {
                 videoSource = __instance.GetComponent<VideoPlayer>();
@@ -113,12 +117,12 @@ namespace BestestTVModPlugin
             if (TVIndex >= VideoManager.Videos.Count - 1)
                 TVIndex = 0;
             else
-            TVIndex++;
+                TVIndex++;
             videoSource.Stop();
             videoSource.time = 0.0;
             videoSource.url = "file://" + VideoManager.Videos[TVIndex];
             //currentTimeProperty.SetValue(videoSource, 0f);
-            currentClipProperty.SetValue(videoSource, TVIndex);
+            currentClipProperty?.SetValue(videoSource, TVIndex);
         }
         public static void TVIndexDown()
         {
@@ -129,10 +133,10 @@ namespace BestestTVModPlugin
                 videoSource.time = 0.0;
                 videoSource.url = "file://" + VideoManager.Videos[TVIndex];
                 //currentTimeProperty.SetValue(videoSource, 0f);
-                currentClipProperty.SetValue(videoSource, TVIndex);
+                currentClipProperty?.SetValue(videoSource, TVIndex);
             }
             else
-            TVIndex = VideoManager.Videos.Count - 1;
+                TVIndex = VideoManager.Videos.Count - 1;
         }
 
         public static void SetTVScreenMaterial(TVScript __instance, bool b)
@@ -171,7 +175,6 @@ namespace BestestTVModPlugin
                 videoSource.clip = null;
                 audioSource.clip = null;
 
-                // Build the video URL
                 string videoUrl = "file://" + VideoManager.Videos[TVIndex];
                 if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo(videoUrl); }
                 videoSource.url = videoUrl;
@@ -185,7 +188,6 @@ namespace BestestTVModPlugin
             }
             else
             {
-                // Handle the case where VideoManager.Videos is empty
                 if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogError("VideoManager.Videos list is empty. Put some videos in Television Videos folder."); }
             }
         }
@@ -194,7 +196,7 @@ namespace BestestTVModPlugin
         [HarmonyPostfix]
         private static void StoreShipObjectClientRpcPostfix(int unlockableID)
         {
-            if (ConfigManager.storingResets.Value) 
+            if (ConfigManager.storingResets.Value)
             {
                 UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[unlockableID];
                 if (unlockableItem.inStorage && unlockableItem.unlockableName == "Television" && TVIndex != 0)
@@ -268,17 +270,17 @@ namespace BestestTVModPlugin
                         if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("AdjustTime: " + currentTime.ToString()); }
                     }
 
-                    if (Keyboard.current[skipReverseKey].wasPressedThisFrame && ConfigManager.enableChannels.Value && !ConfigManager.restrictChannels.Value)
+                    if (Keyboard.current[skipReverseKey].wasPressedThisFrame && ConfigManager.enableChannels.Value && !ConfigManager.restrictChannels.Value && tvIsCurrentlyOn)
                     {
                         TVIndexDown();
                     }
 
-                    if (Keyboard.current[skipForwardKey].wasPressedThisFrame && ConfigManager.enableChannels.Value && !ConfigManager.restrictChannels.Value)
+                    if (Keyboard.current[skipForwardKey].wasPressedThisFrame && ConfigManager.enableChannels.Value && !ConfigManager.restrictChannels.Value && tvIsCurrentlyOn)
                     {
                         TVIndexUp();
                     }
 
-                    if (!videoSource.isPlaying || !tvIsCurrentlyOn) 
+                    if (!videoSource.isPlaying || !tvIsCurrentlyOn)
                     {
                         currentTime = 0.0;
                         videoSource.time = audioSource.time;
@@ -317,11 +319,6 @@ namespace BestestTVModPlugin
 
                     if (TVIndex != TVIndex && ConfigManager.enableChannels.Value)
                     {
-                        //
-                        //videoSource.Stop();
-                        //videoSource.time = 0.0;
-                        //videoSource.url = "file://" + VideoManager.Videos[TVIndex];
-                        //currentClipProperty.SetValue(videoSource, TVIndex);
                         if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo("AdjustMediaFile: " + VideoManager.Videos[TVIndex]); }
                         if (!videoSource.isPlaying || !tvIsCurrentlyOn)
                         {
