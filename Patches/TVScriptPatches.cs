@@ -111,32 +111,31 @@ namespace BestestTVModPlugin
             }
             return false;
         }
-
         public static void TVIndexUp()
         {
             if (TVIndex >= VideoManager.Videos.Count - 1)
                 TVIndex = 0;
             else
                 TVIndex++;
+
+            SetVideoSourceUrl();
+        }
+
+        public static void TVIndexDown()
+        {
+            if (TVIndex <= 0)
+                TVIndex = VideoManager.Videos.Count - 1;
+            else
+                TVIndex--;
+
+            SetVideoSourceUrl();
+        }
+
+        private static void SetVideoSourceUrl()
+        {
             videoSource.Stop();
             videoSource.time = 0.0;
             videoSource.url = "file://" + VideoManager.Videos[TVIndex];
-            //currentTimeProperty.SetValue(videoSource, 0f);
-            currentClipProperty?.SetValue(videoSource, TVIndex);
-        }
-        public static void TVIndexDown()
-        {
-            if (TVIndex > 0)
-            {
-                TVIndex--;
-                videoSource.Stop();
-                videoSource.time = 0.0;
-                videoSource.url = "file://" + VideoManager.Videos[TVIndex];
-                //currentTimeProperty.SetValue(videoSource, 0f);
-                currentClipProperty?.SetValue(videoSource, TVIndex);
-            }
-            else
-                TVIndex = VideoManager.Videos.Count - 1;
         }
 
         public static void SetTVScreenMaterial(TVScript __instance, bool b)
