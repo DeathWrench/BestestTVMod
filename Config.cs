@@ -188,25 +188,36 @@ namespace BestestTVModPlugin
             Instance = new ConfigManager(config);
         }
 
-        public static ConfigEntry<bool> enableLogging { get; set; }
+        // Options
+        public static ConfigEntry<VideoAspectRatio> tvScalingOption { get; set; }
         public static ConfigEntry<bool> storingResets { get; set; }
-        public static ConfigEntry<bool> reloadedVideosHUD { get; set; }
+        public static ConfigEntry<bool> enableHudTips { get; set; }
         public static ConfigEntry<bool> tvOnAlways { get; set; }
         public static ConfigEntry<bool> tvPlaysSequentially { get; set; }
         public static ConfigEntry<bool> tvSkipsAfterOffOn { get; set; }
-        public static ConfigEntry<bool> shuffleVideos { get; set; }
+        public static ConfigEntry<bool> shuffleOnStartup { get; set; }
         public static ConfigEntry<bool> enableSeeking { get; set; }
         public static ConfigEntry<bool> enableChannels { get; set; }
         public static ConfigEntry<bool> mouseWheelVolume { get; set; }
         public static ConfigEntry<bool> hideHoverTip { get; set; }
         public static ConfigEntry<bool> restrictChannels { get; set; }
         public static ConfigEntry<bool> tvLightEnabled { get; set; }
-        public static ConfigEntry<VideoAspectRatio> tvScalingOption { get; set; }
+        public static ConfigEntry<double> seekAmount { get; set; }
+        // Multiplayer
+        public static ConfigEntry<bool> enableSync { get; set; }
+        // Bindings
         public static ConfigEntry<Key> reloadVideosKeyBind { get; set; }
+        public static ConfigEntry<Key> shuffleKeyBind { get; set; }
         public static ConfigEntry<Key> seekReverseKeyBind { get; set; }
         public static ConfigEntry<Key> seekForwardKeyBind { get; set; }
         public static ConfigEntry<Key> skipReverseKeyBind { get; set; }
         public static ConfigEntry<Key> skipForwardKeyBind { get; set; }
+        public static ConfigEntry<Key> increaseSeekKeyBind { get; set; }
+        public static ConfigEntry<Key> decreaseSeekKeyBind { get; set; }
+        public static ConfigEntry<Key> pauseKeyBind { get; set; }
+        // Debug
+        public static ConfigEntry<bool> enableLogging { get; set; }
+
         public static ConfigFile configFile { get; private set; }
 
         private ConfigManager(ConfigFile cfg)
@@ -214,7 +225,7 @@ namespace BestestTVModPlugin
             configFile = cfg;
             tvScalingOption = cfg.Bind("Options", "Aspect Ratio", VideoAspectRatio.FitVertically, "Available choices:\nNoScaling\nFitVertically\nFitHorizontally\nFitInside\nFitOutside\nStretch");
             storingResets = cfg.Bind("Options", "Storing Resets List", true, "Does storing the television reset the video index back to 1?");
-            shuffleVideos = cfg.Bind("Options", "Shuffle Videos", false, "Load videos in a random order instead of alphabetically");
+            shuffleOnStartup = cfg.Bind("Options", "Shuffle On Startup", false, "If true, generates a fresh shuffle seed once at load time so videos play in a random order instead of alphabetical. To re-shuffle later at runtime, use the 'Shuffle Videos' keybind under [Bindings].");
             tvLightEnabled = cfg.Bind("Options", "Television Lights", true, "Does light emit from the television when it is turned on?");
             tvOnAlways = cfg.Bind("Options", "TV Always On", false, "Should the TV stay on after it's been turned on once?\n");
             tvPlaysSequentially = cfg.Bind("Options", "TV Plays Sequentially", true, "Play videos in order or loop?\n");
@@ -224,12 +235,18 @@ namespace BestestTVModPlugin
             mouseWheelVolume = cfg.Bind("Options", "Mouse Wheel Volume", true, "Should the mouse wheel control the volume?");
             hideHoverTip = cfg.Bind("Options", "Hide Hovertips", false, "Hide the controls when hovering over the TV");
             restrictChannels = cfg.Bind("Options", "Restrict Channels", false, "Disable the channel controls, but keep the UI, unless Hide Hovertips is also checked");
-            reloadedVideosHUD = cfg.Bind("Options", "Videos Reloaded Prompt", true, "A prompt that pops up indicating that the videos have been reloaded after pressing the keybind.");
-            reloadVideosKeyBind = cfg.Bind("Bindings", "Reload Videos", Key.UpArrow, "Reload videos list, prevents having to restart if you turn shuffle on.");
+            enableHudTips = cfg.Bind("Options", "Enable HUD Tips", true, "Show in-game HUD notifications for plugin actions (video reload, shuffle locally or from a remote player, etc.).");
+            seekAmount = cfg.Bind("Options", "Seek length", 16.0, "How many seconds to seek for.");
+            enableSync = cfg.Bind("Multiplayer", "Enable Sync", true, "Synchronize TV state (shuffle seed, current channel, pause state, video time) between players.");
+            reloadVideosKeyBind = cfg.Bind("Bindings", "Reload Videos", Key.UpArrow, "Reload videos list. Not being synced! If some player, among those with enableSync = true, changes videos in video folders and then reloads their list, other players will get their incompatible state within their next broadcast which can crash the game maybe. If everyone (with enableSync = true) does the same changes to videos, everything should be fine tho (I hope so)");
+            shuffleKeyBind = cfg.Bind("Bindings", "Shuffle Videos", Key.Backslash, "Re-shuffle the playback order at runtime (generates a new seed).");
             seekReverseKeyBind = cfg.Bind("Bindings", "Seek Backwards", Key.LeftBracket, "Go backwards in the currently playing video.");
             seekForwardKeyBind = cfg.Bind("Bindings", "Seek Forwards", Key.RightBracket, "Go forwards in the currently playing video.");
             skipReverseKeyBind = cfg.Bind("Bindings", "Skip Backwards", Key.Comma, "Skip to the previous video.");
             skipForwardKeyBind = cfg.Bind("Bindings", "Skip Forwards", Key.Period, "Skip to the next video.");
+            increaseSeekKeyBind = cfg.Bind("Bindings", "Increase Seek length", Key.Equals, "Doubles the seek length.");
+            decreaseSeekKeyBind = cfg.Bind("Bindings", "Decrease Seek length", Key.Minus, "Halves the seek length.");
+            pauseKeyBind = cfg.Bind("Bindings", "Pause / Resume", Key.P, "Pauses or resumes the currently playing video without turning the TV off.");
             enableLogging = cfg.Bind("Debug", "Logging Enabled", false, "Is logging enabled?");
         }
     }

@@ -11,15 +11,18 @@ Bestest TV Mod enhances your in-game television experience by combining the best
 | Feature                     | Description                                       |
 |---------------------------------|------------------------------------------------|
 | Folder Utilization              | Utilizes the "Television Videos" folder (TVLoader) instead of "media" (LethalTVManager)       |
+| Network Synchronization         | You can choose, if you want videos on your TV tp be in sync with others (channel, time code, shuffle, pause)     |
 | Aspect Ratio Options            | Choose from various aspect ratio settings     |
 | TV Always On                    | The TV will stay on after it's been turned on once |
 | Sequential Video Playback       | Videos play in sequence, or in a loop         |
-| Shuffle Videos                  | Load videos in a random order instead of alphabetically |
+| Shuffle Videos                  | Shuffle videos in a random order instead of alphabetically, now everyone with enabled sync get the same permutation of videos |
+| Reload Videos                  | Reload video list in runtime, you can add videos to folders while playing |
 | Custom Keybinds                 | Set custom keybinds for skipping, seeking, and reloading videos |
 | Turn Off and On to Skip         | Skip to the next video by turning the TV off and back on again |
-| Seeking and Channel Controls    | Enable seeking with brackets and skip videos using comma or period keys                                 |
+| Seeking and Channel Controls    | Enable seeking (controllable seek length) with brackets and skip videos using comma or period keys                                 |
 | Mouse Wheel Volume Control      | Control the volume using the mouse wheel                                 |
 | Hide Hovertips                  | Hide the controls when hovering over the TV for a cleaner interface                                 |
+| Pausing                  | Pause video without turning TV off, so you can seek easily                                 |
 | Restrict Channels               | Disable the channel controls while keeping the UI visible, unless Hide Hovertips is also checked                                 | 
 #### and more!
 
@@ -34,5 +37,7 @@ For downloading YouTube videos directly into your "Television Videos" folder, ch
 ## Note
 
 The automatic relocation of .mp4 files into the correct folder, previously facilitated by [Television Videos Fix](https://thunderstore.io/c/lethal-company/p/DeathWrench/TelevisionVideosFix/), is no longer required, though you can still use it.
+
+Note, that reload videos option is not being synced, If some player, among those with enableSync = true, changes videos in video folders and then reloads their list, other players will get their incompatible state within their next broadcast which can crash the game maybe. If everyone (with enableSync = true) does the same changes to videos, everything should be fine tho (I hope so).
 
 Experience enhanced TV entertainment with Bestest TV Mod!

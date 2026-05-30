@@ -18,56 +18,52 @@ namespace BestestTVModPlugin
         public const string PLUGIN_VERSION = "1.3.2";
         private static readonly Harmony Harmony = new Harmony(PLUGIN_GUID.ToString());
         public static ManualLogSource Log = new ManualLogSource($"​{PLUGIN_NAME}");
-        private InputAction reloadVideosAction;
-        GameObject gameObject;
 
-        private void Start()
+        public static void TriggerReloadVideos()
         {
-            var reloadVideosKey = ConfigManager.reloadVideosKeyBind.Value;
-            reloadVideosAction = new InputAction(binding: $"<Keyboard>/{reloadVideosKey}", interactions: "press");
-            reloadVideosAction.Enable();
-            reloadVideosAction.performed += OnReloadVideosActionPerformed;
-        }
-
-        private async void OnReloadVideosActionPerformed(InputAction.CallbackContext ctx)
-        {
-            if (ctx.ReadValueAsButton())
+            try
             {
-                await RefreshVideos(); 
+                StaticReloadVideos();
+            }
+            catch (Exception e) {
+                if (ConfigManager.enableLogging.Value)
+                    Log.LogWarning($"RefreshVideos failed: {e.Message}");
             }
         }
 
-        public void ReloadVideos()
+        public static void TriggerShuffle()
+        {
+            VideoManager.Shuffle();
+            TVScriptPatches.TVIndexDown();
+            TVScriptPatches.TVIndexUp();
+            ShowHudTip("Shuffle", $"New seed: {VideoManager.Seed}", "ShuffleTip");
+        }
+
+        public static void StaticReloadVideos()
         {
             VideoManager.Videos.Clear();
             VideoManager.Load();
-            if (ConfigManager.reloadedVideosHUD.Value)
-            { HUDManager.Instance.DisplayTip("Reloaded Videos", "Video list has been reloaded.", false, false, "ReloadVideosTip"); }
+            ShowHudTip("Reloaded Videos", "Video list has been reloaded.", "ReloadVideosTip");
         }
-        public async Task RefreshVideos()
+
+        public static void ShowHudTip(string header, string body, string preferenceKey)
         {
-            ReloadVideos();
-            TVScriptPatches.videoSource = instance.gameObject.AddComponent<VideoPlayer>();
-            TVScriptPatches.videoSource.playOnAwake = false;
-            TVScriptPatches.videoSource.isLooping = false;
-            TVScriptPatches.videoSource.source = VideoSource.Url;
-            TVScriptPatches.videoSource.controlledAudioTrackCount = 1;
-            TVScriptPatches.videoSource.audioOutputMode = VideoAudioOutputMode.AudioSource;
-            TVScriptPatches.videoSource.SetTargetAudioSource(0, TVScriptPatches.audioSource);
-            TVScriptPatches.videoSource.url = "file://" + VideoManager.Videos[TVScriptPatches.TVIndex];
-            TVScriptPatches.videoSource.Prepare();
-            TVScriptPatches.SetTVIndex();
-            await Task.Delay(100); 
-            // Hacky way of refreshing the list
-            TVScriptPatches.TVIndexDown();
-            await Task.Delay(100);
-            TVScriptPatches.TVIndexUp();
+            if (!ConfigManager.enableHudTips.Value) return;
+            if (HUDManager.Instance == null) return;
+            try
+            {
+                HUDManager.Instance.DisplayTip(header, body, false, false, preferenceKey);
+            }
+            catch (Exception e)
+            {
+                if (ConfigManager.enableLogging.Value)
+                    BestestTVModPlugin.Log.LogWarning($"ShowHudTip failed: {e.Message}");
+            }
         }
 
         private void OnDisable()
         {
-            reloadVideosAction.performed -= OnReloadVideosActionPerformed;
-            reloadVideosAction.Disable();
+            NetSync.Unregister();
         }
 
         private void Awake()
@@ -77,7 +73,6 @@ namespace BestestTVModPlugin
             BestestTVModPlugin.Log = base.Logger;
             BestestTVModPlugin.Harmony.PatchAll();
 
-            // Load videos and log the count
             VideoManager.Load();
             base.Logger.LogInfo($"{PLUGIN_GUID} {PLUGIN_VERSION} is loaded!");
         }

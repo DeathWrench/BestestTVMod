@@ -1,3 +1,11 @@
+## 1.4.0
+
+- New pause feature, you can stop video without turning the TV off and seek easily.
+- New controls for changing seek length while in game (seekAmount,increaseSeekKeyBind, decreaseSeekKeyBind)
+- New sync feature (enableSync), that works via Unity.Netcode. If enabled, broadcasts changes in TV state to other players, if it was changed, and listens for changes from others.
+- Moved part of code that was managing shuffling/reloading to GetTVInput, because in some modpacks plugin was dying at startup along with async methods that were responsible for this for some reason. Most likely it's because of some BepInEx config value being different or something like that, but I ditched those methods faster than I did find the reason. So now you have to look on tv to be able to shuffle/reload it, like with other control options (the need for shuffling and reloading remotely is marginal, I think).
+- Probably fixed some minor stuff that i thought needed fixing, I forgor already.
+
 ## 1.3.2
 - Fix auto-skipping to next channel when video ends.
 

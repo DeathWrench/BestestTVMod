@@ -7,6 +7,14 @@ namespace BestestTVModPlugin
 {
     public static class VideoManager
     {
+        public static List<string> Videos = new List<string>();
+
+        public static int Seed = 0;
+
+        private static int[] permutation = null;
+        private static int cachedCount = -1;
+        private static int cachedSeed = 0;
+
         public static void Load()
         {
             foreach (string text in Directory.GetDirectories(Paths.PluginPath))
@@ -33,110 +41,99 @@ namespace BestestTVModPlugin
 
             if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo($"Loaded {Videos.Count} total."); }
 
-            if (ConfigManager.shuffleVideos.Value)
+            if (ConfigManager.shuffleOnStartup.Value)
             {
-                Shuffle(Videos);
+                Shuffle();
             }
         }
 
-        // Method to shuffle the list
-        public static void Shuffle<T>(IList<T> list)
+        public static void Shuffle()
         {
+            bool applyingRemote = NetSync.IsApplyingRemote;
+
             Random rng = new Random();
+            int newSeed = rng.Next(int.MinValue, int.MaxValue);
 
-            var shuffleAlgorithms = new Action<IList<T>>[]
-            {
-        FisherYatesShuffle,
-        DurstenfeldShuffle,
-        InsideOutShuffle,
-        SattoloShuffle,
-        RandomPerfectShuffle
-            };
+            SetSeed(newSeed);
 
-            // Shuffle the shuffle algorithms
-            for (int i = 0; i < shuffleAlgorithms.Length; i++)
-            {
-                int j = rng.Next(i, shuffleAlgorithms.Length);
-                var temp = shuffleAlgorithms[i];
-                shuffleAlgorithms[i] = shuffleAlgorithms[j];
-                shuffleAlgorithms[j] = temp;
-            }
+            if (ConfigManager.enableLogging.Value) { BestestTVModPlugin.Log.LogInfo($"Shuffle: new seed = {Seed}"); }
 
-            // Perform shuffled shuffle algorithms
-            foreach (var shuffleAlgorithm in shuffleAlgorithms)
+            if (!applyingRemote
+                && ConfigManager.enableSync.Value
+                && NetSync.IsNetworkReady)
             {
-                shuffleAlgorithm(list);
-            }
-        }
-
-        public static void FisherYatesShuffle<T>(IList<T> list)
-        {
-            Random rng = new Random();
-            int n = list.Count;
-            for (int i = 0; i < n; i++)
-            {
-                int k = rng.Next(i + 1);
-                T value = list[k];
-                list[k] = list[i];
-                list[i] = value;
-            }
-        }
-
-        public static void DurstenfeldShuffle<T>(IList<T> list)
-        {
-            Random rng = new Random();
-            int n = list.Count;
-            for (int i = n - 1; i >= 0; i--)
-            {
-                int j = rng.Next(i + 1);
-                T temp = list[j];
-                list[j] = list[i];
-                list[i] = temp;
-            }
-        }
-
-        public static void InsideOutShuffle<T>(IList<T> list)
-        {
-            Random rng = new Random();
-            int n = list.Count;
-            for (int i = 0; i < n; i++)
-            {
-                int j = rng.Next(i + 1);
-                if (j != i)
+                double t = 0.0;
+                try
                 {
-                    T temp = list[j];
-                    list[j] = list[i];
-                    list[i] = temp;
+                    if (TVScriptPatches.videoSource != null)
+                        t = TVScriptPatches.videoSource.time;
                 }
+                catch { }
+
+                NetSync.BroadcastFullState(
+                    TVScriptPatches.TVIndex,
+                    t,
+                    TVScriptPatches.tvIsCurrentlyOn);
             }
         }
 
-        public static void SattoloShuffle<T>(IList<T> list)
+        public static void SetSeed(int seed)
         {
-            Random rng = new Random();
-            int n = list.Count;
-            for (int i = n - 1; i > 0; i--)
-            {
-                int j = rng.Next(i);
-                T temp = list[j];
-                list[j] = list[i - 1];
-                list[i - 1] = temp;
-            }
+            if (Seed == seed) return;
+            Seed = seed;
+            InvalidatePermutation();
         }
 
-        public static void RandomPerfectShuffle<T>(IList<T> list)
+        public static void ResetShuffle()
         {
-            Random rng = new Random();
-            int n = list.Count;
+            SetSeed(0);
+        }
+
+        public static int GetMappedIndex(int i)
+        {
+            int n = Videos.Count;
+            if (n <= 0) return i;
+
+            int idx = ((i % n) + n) % n;
+
+            if (Seed == 0) return idx;
+
+            EnsurePermutation();
+            return permutation[idx];
+        }
+
+        public static string GetVideo(int i)
+        {
+            return Videos[GetMappedIndex(i)];
+        }
+
+        private static void InvalidatePermutation()
+        {
+            permutation = null;
+            cachedCount = -1;
+            cachedSeed = 0;
+        }
+
+        private static void EnsurePermutation()
+        {
+            int n = Videos.Count;
+            if (permutation != null && cachedCount == n && cachedSeed == Seed) return;
+
+            permutation = new int[n];
+            for (int i = 0; i < n; i++) permutation[i] = i;
+
+            // Seeded deterministic Fisher-Yates.
+            Random rng = new Random(Seed);
             for (int i = n - 1; i > 0; i--)
             {
                 int j = rng.Next(i + 1);
-                T temp = list[j];
-                list[j] = list[i];
-                list[i] = temp;
+                int tmp = permutation[i];
+                permutation[i] = permutation[j];
+                permutation[j] = tmp;
             }
-        }
 
-        public static List<string> Videos = new List<string>();
+            cachedCount = n;
+            cachedSeed = Seed;
+        }
     }
 }
